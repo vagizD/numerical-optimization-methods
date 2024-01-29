@@ -1,0 +1,15 @@
+---
+BraceWrapping:
+  AfterFunction: true
+  AfterClass: true
+  AfterStruct: true
+  AfterNamespace: true
+  AfterEnum: true
+  AfterUnion: true
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakTemplateDeclarations: 'Yes'
+ColumnLimit: 80
+
