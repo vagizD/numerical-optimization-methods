@@ -1,4 +1,3 @@
-
 #ifndef MAIN_CPP_CONSTANTS_HPP
 #define MAIN_CPP_CONSTANTS_HPP
 
@@ -6,16 +5,16 @@
 #include <cfloat>
 
 template<typename F>
-constexpr inline F ln2() {                 // natural log of 2
+constexpr inline F Ln2() {
     return std::log(2);
 }
 
 template<typename F>
-constexpr inline F sqrt2() {
-    return std::sqrt(2);            // root of 2
+constexpr inline F Sqrt2() {
+    return std::sqrt(2);
 }
 
 template<typename F>
-constexpr inline F Eps = std::numeric_limits<F>::epsilon();   // closest value to zero
+constexpr inline F Eps = std::numeric_limits<F>::min();
 
-#endif //MAIN_CPP_CONSTANTS_HPP
+#endif
