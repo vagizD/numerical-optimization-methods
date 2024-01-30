@@ -3,4 +3,4 @@ project(NumMethods)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(NumMethods testExp.cpp constants.hpp exp.hpp)
+add_executable(NumMethods test-exp.cpp constants.hpp exp.hpp)

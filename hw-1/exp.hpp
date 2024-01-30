@@ -22,7 +22,7 @@ constexpr F Exp(F a_x, F a_atol = 10.0 * Eps<F>) {
   // idea: represent exp(y) as 2^{n + y0}, where n is an integer
   // and y0 <= 1/2. This form is much more convenient for computation.
 
-  F y = a_x * M_LOG2El; // y := x / ln2
+  F y = a_x / Ln2<F>(); // y := x / ln2
   F n = NAN;
   F y0 = std::modf(y, &n); // y := n + y_0
 
