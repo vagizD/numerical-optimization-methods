@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.21)
-project(NumMethods)
+project(exponent)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(NumMethods test-exp.cpp constants.hpp exp.hpp)
+set(SOURCE_FILES
+    test-exp.cpp
+    constants.hpp
+    exp.hpp
+)
+
+add_executable(exponent ${SOURCE_FILES})
