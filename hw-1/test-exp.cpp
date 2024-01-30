@@ -180,16 +180,16 @@ int main() {
 
   // LOCAL RESULTS
   // RESULTS FOR FLOAT NUMBERS:
-  // => Max absolute error for x <= 0: 1.19209e-07
+  // => Max absolute error for x <= 0: 2.98023e-08
   // => Max relative error for x > 0:  6.78176e-07
   //
   // RESULTS FOR DOUBLE VALUES:
-  // => Max absolute error for x <= 0: 2.77556e-17
+  // => Max absolute error for x <= 0: 1.38778e-17
   // => Max relative error for x > 0:  3.41524e-15
   //
   // RESULTS FOR LONG DOUBLE VALUES:
-  // => Max absolute error for x <= 0: 2.71051e-20
-  // => Max relative error for x > 0:  3.33261e-18
+  // => Max absolute error for x <= 0: 3.38813e-21
+  // => Max relative error for x > 0:  3.38894e-18
 
   std::cout << "RESULTS FOR LONG DOUBLE VALUES: \n"
             << "=> Max absolute error for x <= 0: " << negLongDoubleMaxErr

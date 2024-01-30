@@ -1,6 +1,8 @@
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <type_traits>
+#include <vector>
 
 #include "constants.hpp"
 
@@ -45,18 +47,22 @@ constexpr F Exp(F a_x, F a_atol = 10.0 * Eps<F>) {
   //         < sqrt(2) * (y0 * ln2)^{N+1} / (N+1)!
   // we can choose N so that R_N(y0 * ln2) < atol (absolute tolerance)
 
-  F arg = y0 * Ln2<F>(); // avoid calculating argument several times
-
-  F rem = Sqrt2<F>() * arg; // remainder
-  F st = 1;                 // summing term
-  F y1 = 1;                 // we will compute y1 = 2^y0
-
+  F arg = y0 * Ln2<F>();     // avoid calculating argument several times
+  F rem = Sqrt2<F>() * arg;  // remainder for Taylor formula
+  std::vector<F> st = {1.0}; // summing terms for Taylor formula
   for (int k = 1; std::abs(rem) > a_atol; k++) {
     rem *= arg / (k + 1);
-    st *= arg / k;
-    y1 += st;
+    st.push_back(st.back() * arg / k);
   }
 
+  // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
+  // we summarize the terms of the Taylor formula in ascending order of the
+  // modulus of the terms to minimize the error of calculations in floating
+  // point numbers arithmetic
+
+  F y1 = 0;
+  for (int i = 0; i < st.size(); ++i)
+    y1 += st[st.size() - i - 1];
   return std::ldexp(y1, n); // return 2^n * y1
 }
 } // namespace ADAAI
