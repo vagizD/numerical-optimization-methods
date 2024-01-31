@@ -1,18 +1,19 @@
-#ifndef MAIN_CPP_CONSTANTS_HPP
-#define MAIN_CPP_CONSTANTS_HPP
+#pragma once
 
-#include <cfloat>
 #include <cmath>
 
-namespace ADAAI {
+namespace ADAAI
+{
 
 template <typename F>
-constexpr inline F Ln2() {
+constexpr inline F Ln2()
+{
   return std::log((F)2);
 }
 
 template <typename F>
-constexpr inline F Sqrt2() {
+constexpr inline F Sqrt2()
+{
   return std::sqrt((F)2);
 }
 
@@ -20,5 +21,3 @@ template <typename F>
 constexpr inline F Eps = std::numeric_limits<F>::epsilon();
 
 } // namespace ADAAI
-
-#endif

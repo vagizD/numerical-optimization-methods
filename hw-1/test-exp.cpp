@@ -1,10 +1,10 @@
-#include "exp.hpp"
-#include <cmath>
 #include <iostream>
 
 #include "constants.hpp"
+#include "exp.hpp"
 
-int main() {
+int main()
+{
 
   // Testing for float values
 
@@ -21,11 +21,12 @@ int main() {
       -5.71428571,  -5.30612245,  -4.89795918,  -4.48979592,  -4.08163265,
       -3.67346939,  -3.26530612,  -2.85714286,  -2.44897959,  -2.04081633,
       -1.63265306,  -1.2244898,   -0.81632653,  -0.40816327,  0.};
-  for (auto x : negFloatTests) {
-    auto stdExp = std::exp(x);          // expected exponent
-    auto impExp = ADAAI::Exp<float>(x); // implemented exponent
-    negFloatMaxErr = std::max(negFloatMaxErr, std::abs(stdExp - impExp));
-  }
+  for (auto x : negFloatTests)
+    {
+      auto stdExp = std::exp(x);          // expected exponent
+      auto impExp = ADAAI::Exp<float>(x); // implemented exponent
+      negFloatMaxErr = std::max(negFloatMaxErr, std::abs(stdExp - impExp));
+    }
 
   // Testing for x > 0
   float posFloatMaxErr = 0.0f; // relative error
@@ -40,12 +41,13 @@ int main() {
       14.28571429, 14.69387755, 15.10204082, 15.51020408, 15.91836735,
       16.32653061, 16.73469388, 17.14285714, 17.55102041, 17.95918367,
       18.36734694, 18.7755102,  19.18367347, 19.59183673, 20.};
-  for (auto x : posFloatTests) {
-    auto stdExp = std::exp(x);          // expected exponent
-    auto impExp = ADAAI::Exp<float>(x); // implemented exponent
-    auto diff = std::abs(stdExp - impExp);
-    posFloatMaxErr = std::max(posFloatMaxErr, diff / stdExp);
-  }
+  for (auto x : posFloatTests)
+    {
+      auto stdExp = std::exp(x);          // expected exponent
+      auto impExp = ADAAI::Exp<float>(x); // implemented exponent
+      auto diff = std::abs(stdExp - impExp);
+      posFloatMaxErr = std::max(posFloatMaxErr, diff / stdExp);
+    }
 
   std::cout << "RESULTS FOR FLOAT VALUES: " << std::endl;
   std::cout << "=> EPS is set to be " << 10.0 * ADAAI::Eps<float> << std::endl;
@@ -76,11 +78,12 @@ int main() {
       -7.08860759,  -6.58227848,  -6.07594937,  -5.56962025,  -5.06329114,
       -4.55696203,  -4.05063291,  -3.5443038,   -3.03797468,  -2.53164557,
       -2.02531646,  -1.51898734,  -1.01265823,  -0.50632911,  0.};
-  for (auto x : negDoubleTests) {
-    auto stdExp = std::exp(x);           // expected exponent
-    auto impExp = ADAAI::Exp<double>(x); // implemented exponent
-    negDoubleMaxErr = std::max(negDoubleMaxErr, std::abs(stdExp - impExp));
-  }
+  for (auto x : negDoubleTests)
+    {
+      auto stdExp = std::exp(x);           // expected exponent
+      auto impExp = ADAAI::Exp<double>(x); // implemented exponent
+      negDoubleMaxErr = std::max(negDoubleMaxErr, std::abs(stdExp - impExp));
+    }
 
   // Testing for x > 0
   double posDoubleMaxErr = 0.0f; // relative error
@@ -101,12 +104,13 @@ int main() {
       32.91139241, 33.41772152, 33.92405063, 34.43037975, 34.93670886,
       35.44303797, 35.94936709, 36.4556962,  36.96202532, 37.46835443,
       37.97468354, 38.48101266, 38.98734177, 39.49367089, 40.};
-  for (auto x : posDoubleTests) {
-    auto stdExp = std::exp(x);           // expected exponent
-    auto impExp = ADAAI::Exp<double>(x); // implemented exponent
-    auto diff = std::abs(stdExp - impExp);
-    posDoubleMaxErr = std::max(posDoubleMaxErr, diff / stdExp);
-  }
+  for (auto x : posDoubleTests)
+    {
+      auto stdExp = std::exp(x);           // expected exponent
+      auto impExp = ADAAI::Exp<double>(x); // implemented exponent
+      auto diff = std::abs(stdExp - impExp);
+      posDoubleMaxErr = std::max(posDoubleMaxErr, diff / stdExp);
+    }
 
   std::cout << "RESULTS FOR DOUBLE VALUES: " << std::endl;
   std::cout << "=> EPS is set to be " << 10.0 * ADAAI::Eps<double> << std::endl;
@@ -145,12 +149,13 @@ int main() {
       -9.41176471,  -8.7394958,   -8.06722689,  -7.39495798,  -6.72268908,
       -6.05042017,  -5.37815126,  -4.70588235,  -4.03361345,  -3.36134454,
       -2.68907563,  -2.01680672,  -1.34453782,  -0.67226891,  0.};
-  for (auto x : negLongDoubleTests) {
-    auto stdExp = std::exp(x);                // expected exponent
-    auto impExp = ADAAI::Exp<long double>(x); // implemented exponent
-    negLongDoubleMaxErr =
-        std::max(negLongDoubleMaxErr, std::abs(stdExp - impExp));
-  }
+  for (auto x : negLongDoubleTests)
+    {
+      auto stdExp = std::exp(x);                // expected exponent
+      auto impExp = ADAAI::Exp<long double>(x); // implemented exponent
+      negLongDoubleMaxErr =
+          std::max(negLongDoubleMaxErr, std::abs(stdExp - impExp));
+    }
 
   // Testing for x > 0
   long double posLongDoubleMaxErr = 0.0f; // relative error
@@ -179,12 +184,13 @@ int main() {
       70.58823529, 71.2605042,  71.93277311, 72.60504202, 73.27731092,
       73.94957983, 74.62184874, 75.29411765, 75.96638655, 76.63865546,
       77.31092437, 77.98319328, 78.65546218, 79.32773109, 80.};
-  for (auto x : posLongDoubleTests) {
-    auto stdExp = std::exp(x);                // expected exponent
-    auto impExp = ADAAI::Exp<long double>(x); // implemented exponent
-    long double diff = std::abs(stdExp - impExp);
-    posLongDoubleMaxErr = std::max(posLongDoubleMaxErr, diff / stdExp);
-  }
+  for (auto x : posLongDoubleTests)
+    {
+      auto stdExp = std::exp(x);                // expected exponent
+      auto impExp = ADAAI::Exp<long double>(x); // implemented exponent
+      long double diff = std::abs(stdExp - impExp);
+      posLongDoubleMaxErr = std::max(posLongDoubleMaxErr, diff / stdExp);
+    }
 
   std::cout << "RESULTS FOR LONG DOUBLE VALUES: " << std::endl;
   std::cout << "=> EPS is set to be "

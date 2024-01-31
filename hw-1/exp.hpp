@@ -1,16 +1,16 @@
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-#include <type_traits>
-#include <vector>
+#pragma once
 
 #include "constants.hpp"
+#include <cstdint>
+#include <vector>
 
-namespace ADAAI {
+namespace ADAAI
+{
 
 // constexpr -- compile-time evaluation
 template <typename F>
-constexpr F Exp(F a_x, F a_atol = 10.0 * Eps<F>) {
+constexpr F Exp(F a_x, F a_atol = 10.0 * Eps<F>)
+{
   // F must be floating-point number
   static_assert(std::is_floating_point_v<F>);
 
@@ -50,10 +50,11 @@ constexpr F Exp(F a_x, F a_atol = 10.0 * Eps<F>) {
   F arg = y0 * Ln2<F>();     // avoid calculating argument several times
   F rem = Sqrt2<F>() * arg;  // remainder for Taylor formula
   std::vector<F> st = {1.0}; // summing terms for Taylor formula
-  for (int k = 1; std::abs(rem) > a_atol; k++) {
-    rem *= arg / (k + 1);
-    st.push_back(st.back() * arg / k);
-  }
+  for (int k = 1; std::abs(rem) > a_atol; k++)
+    {
+      rem *= arg / (k + 1);
+      st.push_back(st.back() * arg / k);
+    }
 
   // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
   // we summarize the terms of the Taylor formula in ascending order of the
