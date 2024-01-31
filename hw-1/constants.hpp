@@ -17,7 +17,7 @@ constexpr inline F Sqrt2() {
 }
 
 template <typename F>
-constexpr inline F Eps = std::numeric_limits<F>::min();
+constexpr inline F Eps = std::numeric_limits<F>::epsilon();
 
 } // namespace ADAAI
 

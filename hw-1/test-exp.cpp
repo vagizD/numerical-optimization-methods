@@ -2,6 +2,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "constants.hpp"
+
 int main() {
 
   // Testing for float values
@@ -45,10 +47,13 @@ int main() {
     posFloatMaxErr = std::max(posFloatMaxErr, diff / stdExp);
   }
 
-  std::cout << "RESULTS FOR FLOAT NUMBERS: \n"
-            << "=> Max absolute error for x <= 0: " << negFloatMaxErr
-            << "\n=> Max relative error for x > 0:  " << posFloatMaxErr
-            << "\n\n";
+  std::cout << "RESULTS FOR FLOAT VALUES: " << std::endl;
+  std::cout << "=> EPS is set to be " << 10.0 * ADAAI::Eps<float> << std::endl;
+  std::cout << "=> Max absolute error for x <= 0: " << negFloatMaxErr
+            << std::endl;
+  std::cout << "=> Max relative error for x > 0:  " << posFloatMaxErr
+            << std::endl;
+  std::cout << std::endl;
 
   // Testing for double values
 
@@ -103,10 +108,13 @@ int main() {
     posDoubleMaxErr = std::max(posDoubleMaxErr, diff / stdExp);
   }
 
-  std::cout << "RESULTS FOR DOUBLE VALUES: \n"
-            << "=> Max absolute error for x <= 0: " << negDoubleMaxErr
-            << "\n=> Max relative error for x > 0:  " << posDoubleMaxErr
-            << "\n\n";
+  std::cout << "RESULTS FOR DOUBLE VALUES: " << std::endl;
+  std::cout << "=> EPS is set to be " << 10.0 * ADAAI::Eps<double> << std::endl;
+  std::cout << "=> Max absolute error for x <= 0: " << negDoubleMaxErr
+            << std::endl;
+  std::cout << "=> Max relative error for x > 0:  " << posDoubleMaxErr
+            << std::endl;
+  std::cout << std::endl;
 
   // Testing for long double values
 
@@ -178,21 +186,27 @@ int main() {
     posLongDoubleMaxErr = std::max(posLongDoubleMaxErr, diff / stdExp);
   }
 
+  std::cout << "RESULTS FOR LONG DOUBLE VALUES: " << std::endl;
+  std::cout << "=> EPS is set to be "
+            << 10.0 * ADAAI::Eps<long double> << std::endl;
+  std::cout << "=> Max absolute error for x <= 0: " << negLongDoubleMaxErr
+            << std::endl;
+  std::cout << "=> Max relative error for x > 0:  " << posLongDoubleMaxErr
+            << std::endl;
+
   // LOCAL RESULTS
-  // RESULTS FOR FLOAT NUMBERS:
-  // => Max absolute error for x <= 0: 2.98023e-08
-  // => Max relative error for x > 0:  6.78176e-07
+  // RESULTS FOR FLOAT VALUES:
+  // => EPS is set to be 1.19209e-06
+  // => Max absolute error for x <= 0: 4.17233e-07
+  // => Max relative error for x > 0:  1.24975e-06
   //
   // RESULTS FOR DOUBLE VALUES:
-  // => Max absolute error for x <= 0: 1.38778e-17
-  // => Max relative error for x > 0:  3.41524e-15
+  // => EPS is set to be 2.22045e-15
+  // => Max absolute error for x <= 0: 1.11022e-16
+  // => Max relative error for x > 0:  4.24767e-15
   //
   // RESULTS FOR LONG DOUBLE VALUES:
-  // => Max absolute error for x <= 0: 3.38813e-21
-  // => Max relative error for x > 0:  3.38894e-18
-
-  std::cout << "RESULTS FOR LONG DOUBLE VALUES: \n"
-            << "=> Max absolute error for x <= 0: " << negLongDoubleMaxErr
-            << "\n=> Max relative error for x > 0:  " << posLongDoubleMaxErr
-            << "\n\n";
+  // => EPS is set to be 1.0842e-18
+  // => Max absolute error for x <= 0: 4.06576e-20
+  // => Max relative error for x > 0:  3.49518e-18
 }
