@@ -7,8 +7,17 @@
 
 namespace ADAAI {
 
-// constexpr -- compile-time evaluation
+enum class MethodE { Taylor, Pade};
+
 template <typename F>
+constexpr F PadeExp(F a_x) {
+    Poly<F, PadeNum<F>.size()> P(PadeNum<F>);
+    Poly<F, PadeDen<F>.size()> Q(PadeDen<F>);
+    return P.eval(a_x) / Q.eval(a_x);
+}
+
+// constexpr -- compile-time evaluation
+template <MethodE M=MethodE::Pade, typename F>
 constexpr F Exp(F a_x) {
     // F must be floating-point number
     static_assert(std::is_floating_point_v<F>);
@@ -47,28 +56,28 @@ constexpr F Exp(F a_x) {
     // we can choose N so that R_N(y0 * ln2) < atol (absolute tolerance)
 
     F arg = y0 * Ln2<F>();      // avoid calculating argument several times
-    F rem = Sqrt2<F>() * arg;   // remainder for Taylor formula
     std::vector<F> st = {1.0};  // summing terms for Taylor formula
-    for (int k = 1; std::abs(rem) > static_cast<F>(10.0) * Eps<F>; k++) {
-        rem *= arg / (k + 1);
-        st.push_back(st.back() * arg / k);
+    F y1 = 0;
+    constexpr int N = MKExpTaylorOrder<F>(); // compile-time evaluation of order
+
+    if constexpr (M == MethodE::Taylor) {
+
+        for (int k = 1; k <= N; k++) {
+            st.push_back(st.back() * arg / k);
+        }
+        // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
+        // we summarize the terms of the Taylor formula in ascending order of the
+        // modulus of the terms to minimize the error of calculations in floating
+        // point numbers arithmetic
+
+        for (int i = 0; i < st.size(); ++i)
+            y1 += st[st.size() - i - 1];
     }
 
-    // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
-    // we summarize the terms of the Taylor formula in ascending order of the
-    // modulus of the terms to minimize the error of calculations in floating
-    // point numbers arithmetic
+    if constexpr (M == MethodE::Pade)
+        y1 = PadeExp<F>(arg);
 
-    F y1 = 0;
-    for (int i = 0; i < st.size(); ++i)
-        y1 += st[st.size() - i - 1];
     return std::ldexp(y1, n);  // return 2^n * y1
 }
 
-template <typename F>
-constexpr F PadeExp(F a_x) {
-    Poly<F, PadeNum<F>.size()> P(PadeNum<F>);
-    Poly<F, PadeDen<F>.size()> Q(PadeDen<F>);
-    return P.eval(a_x) / Q.eval(a_x);
-}
 }  // namespace ADAAI

@@ -15,8 +15,12 @@ makeTests(T a_l, T a_r, T a_step, std::function<T(T)> a_exponent) {
         T stdExp = std::exp(currentX);
         T impExp = a_exponent(currentX);
         T diff = std::abs(stdExp - impExp);
-        absError = std::max(diff, absError);
-        relError = std::max(diff / stdExp, relError);
+        if(currentX < 0) {
+            absError = std::max(diff, absError);
+        }
+        else {
+            relError = std::max(diff / stdExp, relError);
+        }
         currentX += a_step;
     }
     return std::make_pair(absError, relError);
