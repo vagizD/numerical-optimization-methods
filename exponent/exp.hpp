@@ -7,17 +7,17 @@
 
 namespace ADAAI {
 
-enum class MethodE { Taylor, Pade};
+enum class MethodE { Taylor, Pade };
 
 template <typename F>
 constexpr F PadeExp(F a_x) {
-    Poly<F, PadeNum<F>.size()> P(PadeNum<F>);
-    Poly<F, PadeDen<F>.size()> Q(PadeDen<F>);
+    Poly<F, PadeNum<F>.size()> P(PadeNum<F>, PadeNum<F>.size());
+    Poly<F, PadeDen<F>.size()> Q(PadeDen<F>, PadeDen<F>.size());
     return P.eval(a_x) / Q.eval(a_x);
 }
 
 // constexpr -- compile-time evaluation
-template <MethodE M=MethodE::Pade, typename F>
+template <MethodE M = MethodE::Pade, typename F>
 constexpr F Exp(F a_x) {
     // F must be floating-point number
     static_assert(std::is_floating_point_v<F>);
@@ -58,17 +58,17 @@ constexpr F Exp(F a_x) {
     F arg = y0 * Ln2<F>();      // avoid calculating argument several times
     std::vector<F> st = {1.0};  // summing terms for Taylor formula
     F y1 = 0;
-    constexpr int N = MKExpTaylorOrder<F>(); // compile-time evaluation of order
+    constexpr int N =
+        MKExpTaylorOrder<F>();  // compile-time evaluation of order
 
     if constexpr (M == MethodE::Taylor) {
-
         for (int k = 1; k <= N; k++) {
             st.push_back(st.back() * arg / k);
         }
         // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
-        // we summarize the terms of the Taylor formula in ascending order of the
-        // modulus of the terms to minimize the error of calculations in floating
-        // point numbers arithmetic
+        // we summarize the terms of the Taylor formula in ascending order of
+        // the modulus of the terms to minimize the error of calculations in
+        // floating point numbers arithmetic
 
         for (int i = 0; i < st.size(); ++i)
             y1 += st[st.size() - i - 1];
