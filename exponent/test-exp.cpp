@@ -15,16 +15,16 @@ int main() {
         std::cout << "=> EPS is set to be "
                   << 10.0 * ADAAI::Eps<float> << std::endl;
         {
-            auto [absError, relError] =
-                ADAAI::makeTests<float>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, float>);
+            auto [absError, relError] = ADAAI::makeTests<
+                float>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, float>);
             std::cout << "=> PADE   | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> PADE   | Max relative error: " << relError
                       << std::endl;
         }
         {
-            auto [absError, relError] =
-                ADAAI::makeTests<float>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, float>);
+            auto [absError, relError] = ADAAI::makeTests<
+                float>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, float>);
             std::cout << "=> Taylor | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> Taylor | Max relative error: " << relError
@@ -40,16 +40,16 @@ int main() {
                   << 10.0 * ADAAI::Eps<double> << std::endl;
         ;
         {
-            auto [absError, relError] =
-                ADAAI::makeTests<double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, double>);
+            auto [absError, relError] = ADAAI::makeTests<
+                double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, double>);
             std::cout << "=> PADE   | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> PADE   | Max relative error: " << relError
                       << std::endl;
         }
         {
-            auto [absError, relError] =
-                ADAAI::makeTests<double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, double>);
+            auto [absError, relError] = ADAAI::makeTests<
+                double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, double>);
             std::cout << "=> Taylor | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> Taylor | Max relative error: " << relError
@@ -80,8 +80,6 @@ int main() {
                       << std::endl;
         }
     }
-
-
 
     // LOCAL RESULTS
     // ==============================================
@@ -117,16 +115,16 @@ int main() {
         std::cout << "=> EPS is set to be "
                   << 10.0 * ADAAI::Eps<float> << std::endl;
         {
-            auto [absError, relError] =
-                    ADAAI::makeTests<float>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, float>);
+            auto [absError, relError] = ADAAI::makeTests<
+                float>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, float>);
             std::cout << "=> PADE   | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> PADE   | Max relative error: " << relError
                       << std::endl;
         }
         {
-            auto [absError, relError] =
-                    ADAAI::makeTests<float>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, float>);
+            auto [absError, relError] = ADAAI::makeTests<
+                float>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, float>);
             std::cout << "=> Taylor | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> Taylor | Max relative error: " << relError
@@ -145,16 +143,16 @@ int main() {
                   << 10.0 * ADAAI::Eps<double> << std::endl;
         ;
         {
-            auto [absError, relError] =
-                    ADAAI::makeTests<double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, double>);
+            auto [absError, relError] = ADAAI::makeTests<
+                double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, double>);
             std::cout << "=> PADE   | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> PADE   | Max relative error: " << relError
                       << std::endl;
         }
         {
-            auto [absError, relError] =
-                    ADAAI::makeTests<double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, double>);
+            auto [absError, relError] = ADAAI::makeTests<
+                double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, double>);
             std::cout << "=> Taylor | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> Taylor | Max relative error: " << relError
@@ -173,7 +171,7 @@ int main() {
                   << 10.0 * ADAAI::Eps<long double> << std::endl;
         {
             auto [absError, relError] = ADAAI::makeTests<
-                    long double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, long double>);
+                long double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Pade, long double>);
             std::cout << "=> PADE   | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> PADE   | Max relative error: " << relError
@@ -181,7 +179,7 @@ int main() {
         }
         {
             auto [absError, relError] = ADAAI::makeTests<
-                    long double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, long double>);
+                long double>(-r, r, step, ADAAI::Exp<ADAAI::MethodE::Taylor, long double>);
             std::cout << "=> Taylor | Max absolute error: " << absError
                       << std::endl;
             std::cout << "=> Taylor | Max relative error: " << relError
