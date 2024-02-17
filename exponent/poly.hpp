@@ -34,9 +34,9 @@ public:
     }
 
     Poly<F, N> &operator+=(Poly<F, N> &other) {
-        for (size_t i = 0; i < std::max(other.deg, deg))
+        for (size_t i = 0; i < std::max(other.deg, deg); i++)
             coefficients[i] += other.coefficients[i];
-        size = std::max(other.deg, deg);
+        deg = std::max(other.deg, deg);
         return *this;
     };
 
@@ -54,11 +54,11 @@ public:
     };
 
     // => Horner's method <=
-    std::pair<Poly<F, N>, Poly<F, N>> Poly Horner(const Poly<F, N> &other) {
+    std::pair<Poly<F, N>, Poly<F, N>> Horner(const Poly<F, N> &other) {
         std::array<F, N> res = coefficients;
         int cur = deg;
-        while (cur - other.deg >= 0) {
-            res[cur] = coefficients[cur] / other.coefficients[other.deg];
+        while (cur >= static_cast<int>(other.deg)) {
+            res[cur] = res[cur] / other.coefficients[other.deg];
             for (int i = 1; i <= other.deg; ++i) {
                 res[cur - i] -= res[cur] * other.coefficients[other.deg - i];
             }

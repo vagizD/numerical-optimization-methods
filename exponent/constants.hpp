@@ -8,27 +8,27 @@ namespace ADAAI {
 template <typename F>
 constexpr inline F Ln2() {
     static_assert(std::is_floating_point_v<F>);
-    if(std::is_same<F, float>::value){
-        return 1/M_LOG2Ef;
+    if (std::is_same<F, float>::value) {
+        return 1 / M_LOG2Ef;
     }
-    if(std::is_same<F, double>::value){
-        return 1/M_LOG2E;
+    if (std::is_same<F, double>::value) {
+        return 1 / M_LOG2E;
     }
-    if(std::is_same<F, long double>::value){
-        return 1/M_LOG2El;
+    if (std::is_same<F, long double>::value) {
+        return 1 / M_LOG2El;
     }
 }
 
 template <typename F>
 constexpr inline F Sqrt2() {
     static_assert(std::is_floating_point_v<F>);
-    if(std::is_same<F, float>::value){
+    if (std::is_same<F, float>::value) {
         return M_SQRT2f;
     }
-    if(std::is_same<F, double>::value){
+    if (std::is_same<F, double>::value) {
         return M_SQRT2;
     }
-    if(std::is_same<F, long double>::value){
+    if (std::is_same<F, long double>::value) {
         return M_SQRT2l;
     }
 }
@@ -61,10 +61,10 @@ constexpr inline int MKExpTaylorOrder() {
     F arg = Ln2<F>() / 2;
     F rem = Sqrt2<F>() * arg;
     int k = 1;
-    for(; std::abs(rem) > a_atol; k++) {
+    for (; std::abs(rem) > a_atol; k++) {
         rem *= arg / (k + 1);
     }
-    return k-1;
+    return k - 1;
 }
 
 }  // namespace ADAAI

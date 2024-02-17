@@ -9,15 +9,20 @@ namespace ADAAI {
 
 enum class MethodE { Taylor, Pade };
 
+template <typename F, size_t Capacity>
+constexpr Poly<F, Capacity> GCD(Poly<F, Capacity> T, Poly<F, Capacity> E) {
+}
+
 template <typename F>
 constexpr F PadeExp(F a_x) {
     Poly<F, PadeNum<F>.size()> P(PadeNum<F>, PadeNum<F>.size());
     Poly<F, PadeDen<F>.size()> Q(PadeDen<F>, PadeDen<F>.size());
+
     return P.eval(a_x) / Q.eval(a_x);
 }
 
 // constexpr -- compile-time evaluation
-template <MethodE M = MethodE::Pade, typename F>
+template <MethodE M = MethodE::Pade, typename F, size_t Capacity>
 constexpr F Exp(F a_x) {
     // F must be floating-point number
     static_assert(std::is_floating_point_v<F>);
@@ -74,8 +79,18 @@ constexpr F Exp(F a_x) {
             y1 += st[st.size() - i - 1];
     }
 
-    if constexpr (M == MethodE::Pade)
+    if constexpr (M == MethodE::Pade) {
+        std::array<F, Capacity> TaylorCoef = {1.0};
+        for (int k = 1; k <= N; k++) {
+            TaylorCoef[k] = TaylorCoef[k - 1] * arg / k;
+        }
+        Poly<F, Capacity> TaylorS(TaylorCoef, N);
+
+        std::array<F, Capacity> monomial = {};
+        monomial[N + 1] = 1;
+
         y1 = PadeExp<F>(arg);
+    }
 
     return std::ldexp(y1, n);  // return 2^n * y1
 }
