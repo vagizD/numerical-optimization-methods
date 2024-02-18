@@ -2,22 +2,24 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <cstdio>
 #include <vector>
+#include "constants.hpp"
 
 namespace ADAAI {
 template <typename F, size_t N>
 class Poly {
-private:
+public:
     std::array<F, N> coefficients;
     size_t deg;
 
-public:
     explicit Poly(const std::array<F, N> &a_coefficients)
         : coefficients(a_coefficients) {
         deg = N - 1;
-        while (a_coefficients[deg] == 0 && deg != 0)
-            deg--;
+        while (std::abs(a_coefficients[deg]) < (F)10.0 * ADAAI::Eps<F> &&
+               deg != 0)
+            coefficients[deg--] = 0;
     }
 
     [[nodiscard]] F eval(F a_x) const {
@@ -36,19 +38,44 @@ public:
         return v;
     }
 
-    Poly<F, N> &operator+=(Poly<F, N> &other) {
-        for (size_t i = 0; i < std::max(other.deg, deg); i++)
+    Poly<F, N> operator-(const Poly<F, N> &other) {
+        std::array<F, N> sub = coefficients;
+        for (size_t i = 0; i <= std::max(other.deg, deg); i++)
+            sub[i] -= other.coefficients[i];
+        return Poly<F, N>(sub);
+    };
+
+    Poly<F, N> operator+(const Poly<F, N> &other) {
+        std::array<F, N> sum = coefficients;
+        for (size_t i = 0; i <= std::max(other.deg, deg); i++)
+            sum[i] += other.coefficients[i];
+        return Poly<F, N>(sum);
+    };
+
+    Poly<F, N> &operator+=(const Poly<F, N> &other) {
+        for (size_t i = 0; i <= std::max(other.deg, deg); i++)
             coefficients[i] += other.coefficients[i];
         deg = std::max(other.deg, deg);
         return *this;
     };
 
-    Poly<F, N> &operator*=(Poly<F, N> &other) {
-        std::array<F, N> mul;
-        static_assert(deg + other.deg < N);
+    Poly<F, N> operator*(const Poly<F, N> &other) {
+        std::array<F, N> mul = {};
+        assert(deg + other.deg < N);
         for (size_t i = 0; i <= deg; i++) {
             for (size_t j = 0; j <= other.deg; j++) {
-                mul[i + j] = coefficients[i] * other.coefficients[j];
+                mul[i + j] += coefficients[i] * other.coefficients[j];
+            }
+        }
+        return Poly<F, N>(mul);
+    };
+
+    Poly<F, N> &operator*=(const Poly<F, N> &other) {
+        std::array<F, N> mul = {};
+        assert(deg + other.deg < N);
+        for (size_t i = 0; i <= deg; i++) {
+            for (size_t j = 0; j <= other.deg; j++) {
+                mul[i + j] += coefficients[i] * other.coefficients[j];
             }
         }
         deg += other.deg;
@@ -57,7 +84,7 @@ public:
     };
 
     // => Horner's method <=
-    std::pair<Poly<F, N>, Poly<F, N>> Horner(const Poly<F, N> &other) {
+    Poly<F, N> operator/(const Poly<F, N> &other) {
         std::array<F, N> res = coefficients;
         int cur = deg;
         while (cur >= static_cast<int>(other.deg)) {
@@ -68,17 +95,12 @@ public:
             cur--;
         }
 
-        std::array<F, N> div;
+        std::array<F, N> div = {};
         for (int i = other.deg; i <= deg; ++i) {
             div[i - other.deg] = res[i];
         }
 
-        std::array<F, N> rem;
-        for (int i = 0; i < other.deg; ++i) {
-            rem[i] = res[i];
-        }
-
-        return std::make_pair(Poly(div), Poly(rem));
+        return Poly<F, N>(div);
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Poly<F, N> p) {

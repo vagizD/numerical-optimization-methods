@@ -10,18 +10,17 @@ namespace ADAAI {
 enum class MethodE { Taylor, Pade };
 
 template <typename F, size_t Capacity>
-constexpr Poly<F, Capacity>
+constexpr std::pair<Poly<F, Capacity>, Poly<F, Capacity>>
 solvePade(Poly<F, Capacity> T, Poly<F, Capacity> E, size_t n) {
-    Poly<F, Capacity> A(std::array<F, Capacity>(1));
-    Poly<F, Capacity> B(std::array<F, Capacity>(0));
-    Poly<F, Capacity> C(std::array<F, Capacity>(0));
-    Poly<F, Capacity> D(std::array<F, Capacity>(1));
+    Poly<F, Capacity> A(std::array<F, Capacity>({1}));
+    Poly<F, Capacity> B(std::array<F, Capacity>({0}));
+    Poly<F, Capacity> C(std::array<F, Capacity>({0}));
+    Poly<F, Capacity> D(std::array<F, Capacity>({1}));
 
     while (D.deg < n) {
-        Poly<F, Capacity> div = (A * E + B * T) / (C * E + D * T);
-        Poly<F, Capacity> C_next = A + div * C;
-        Poly<F, Capacity> D_next = B + div * D;
-
+        Poly<F, Capacity> div = ((A * E) + (B * T)) / ((C * E) + (D * T));
+        Poly<F, Capacity> C_next = A - div * C;
+        Poly<F, Capacity> D_next = B - div * D;
         A = C;
         B = D;
         C = C_next;
@@ -33,8 +32,8 @@ solvePade(Poly<F, Capacity> T, Poly<F, Capacity> E, size_t n) {
 
 template <typename F>
 constexpr F PadeExp(F a_x) {
-    Poly<F, PadeNum<F>.size()> P(PadeNum<F>, PadeNum<F>.size());
-    Poly<F, PadeDen<F>.size()> Q(PadeDen<F>, PadeDen<F>.size());
+    Poly<F, PadeNum<F>.size()> P(PadeNum<F>);
+    Poly<F, PadeDen<F>.size()> Q(PadeDen<F>);
 
     return P.eval(a_x) / Q.eval(a_x);
 }
@@ -100,14 +99,18 @@ constexpr F Exp(F a_x) {
     if constexpr (M == MethodE::Pade) {
         std::array<F, Capacity> TaylorCoef = {1.0};
         for (int k = 1; k <= N; k++) {
-            TaylorCoef[k] = TaylorCoef[k - 1] * arg / k;
+            TaylorCoef[k] = TaylorCoef[k - 1] / k;
         }
-        Poly<F, Capacity> TaylorS(TaylorCoef, N);
 
         std::array<F, Capacity> monomial = {};
         monomial[N + 1] = 1;
 
-        y1 = PadeExp<F>(arg);
+        auto [P, Q] = solvePade(
+            Poly<F, Capacity>(TaylorCoef), Poly<F, Capacity>(monomial), N / 2
+        );
+
+        y1 = P.eval(arg) / Q.eval(arg);
+        // y1 = PadeExp<F>(arg);
     }
 
     return std::ldexp(y1, n);  // return 2^n * y1

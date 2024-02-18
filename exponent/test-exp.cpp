@@ -11,7 +11,7 @@ int main() {
 
     // we test over [-Ln2/2, Ln2/2] in steps of 0.001
     {
-        float step = 0.001;
+        float step = 0.01;
         float r = ADAAI::Ln2<float>() / 2;
         std::cout << "===RESULTS FOR FLOAT===" << std::endl;
         std::cout << "=> EPS is set to be "
@@ -35,7 +35,7 @@ int main() {
         std::cout << std::endl;
     }
     {
-        double step = 0.001;
+        double step = 0.01;
         double r = ADAAI::Ln2<double>() / 2;
         std::cout << "===RESULTS FOR DOUBLE===" << std::endl;
         std::cout << "=> EPS is set to be "
@@ -60,7 +60,7 @@ int main() {
         std::cout << std::endl;
     }
     {
-        long double step = 0.001;
+        long double step = 0.01;
         long double r = ADAAI::Ln2<long double>() / 2;
         std::cout << "===RESULTS FOR LONG DOUBLE===" << std::endl;
         std::cout << "=> EPS is set to be "
@@ -111,7 +111,7 @@ int main() {
     // range: [-20, 20]
     // step: 0.001
     {
-        float step = 0.001;
+        float step = 0.01;
         float r = 20;
         std::cout << "===RESULTS FOR FLOAT===" << std::endl;
         std::cout << "=> EPS is set to be "
@@ -138,7 +138,7 @@ int main() {
     // range: [-40, 40]
     // step: 0.001
     {
-        double step = 0.001;
+        double step = 0.01;
         double r = 40;
         std::cout << "===RESULTS FOR DOUBLE===" << std::endl;
         std::cout << "=> EPS is set to be "
@@ -166,7 +166,7 @@ int main() {
     // range: [-80, 80]
     // step: 0.001
     {
-        long double step = 0.001;
+        long double step = 0.01;
         long double r = 80;
         std::cout << "===RESULTS FOR LONG DOUBLE===" << std::endl;
         std::cout << "=> EPS is set to be "

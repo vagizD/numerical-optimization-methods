@@ -53,8 +53,7 @@ constexpr inline std::array<F, 13> PadeDen = {
     -8.479175146132913e-07,
     6.359381359694395e-08,
     -3.854170521123118e-09,
-    1.6059043838734714e-10
-};
+    1.6059043838734714e-10};
 
 template <typename F>
 constexpr inline int MKExpTaylorOrder() {
