@@ -10,11 +10,14 @@ template <typename F, size_t N>
 class Poly {
 private:
     std::array<F, N> coefficients;
-    size_t deg = 0;
+    size_t deg;
 
 public:
-    explicit Poly(const std::array<F, N> &a_coefficients, size_t deg)
-        : coefficients(a_coefficients), deg(deg) {
+    explicit Poly(const std::array<F, N> &a_coefficients)
+        : coefficients(a_coefficients) {
+        deg = N - 1;
+        while (a_coefficients[deg] == 0 && deg != 0)
+            deg--;
     }
 
     [[nodiscard]] F eval(F a_x) const {
@@ -65,21 +68,17 @@ public:
             cur--;
         }
 
-        int remDeg = other.deg - 1;
-        while (res[remDeg] == 0 && remDeg >= 0)
-            remDeg--;
-
         std::array<F, N> div;
         for (int i = other.deg; i <= deg; ++i) {
             div[i - other.deg] = res[i];
         }
 
         std::array<F, N> rem;
-        for (int i = 0; i <= remDeg; ++i) {
+        for (int i = 0; i < other.deg; ++i) {
             rem[i] = res[i];
         }
 
-        return std::make_pair(Poly(div, deg - other.deg), Poly(rem, remDeg));
+        return std::make_pair(Poly(div), Poly(rem));
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Poly<F, N> p) {

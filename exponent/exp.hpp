@@ -10,7 +10,25 @@ namespace ADAAI {
 enum class MethodE { Taylor, Pade };
 
 template <typename F, size_t Capacity>
-constexpr Poly<F, Capacity> GCD(Poly<F, Capacity> T, Poly<F, Capacity> E) {
+constexpr Poly<F, Capacity>
+solvePade(Poly<F, Capacity> T, Poly<F, Capacity> E, size_t n) {
+    Poly<F, Capacity> A(std::array<F, Capacity>(1));
+    Poly<F, Capacity> B(std::array<F, Capacity>(0));
+    Poly<F, Capacity> C(std::array<F, Capacity>(0));
+    Poly<F, Capacity> D(std::array<F, Capacity>(1));
+
+    while (D.deg < n) {
+        Poly<F, Capacity> div = (A * E + B * T) / (C * E + D * T);
+        Poly<F, Capacity> C_next = A + div * C;
+        Poly<F, Capacity> D_next = B + div * D;
+
+        A = C;
+        B = D;
+        C = C_next;
+        D = D_next;
+    }
+
+    return std::make_pair(C * E + D * T, D);
 }
 
 template <typename F>
