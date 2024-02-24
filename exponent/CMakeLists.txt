@@ -3,10 +3,6 @@ project(exponent)
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(GSL::gsl CONFIG REQUIRED)
-add_compile_options(-lcblas -lm -lgsl)
-add_link_options(-lcblas -lm -lgsl -L/usr/local/lib)
-
 set(SOURCE_FILES
     test-exp.cpp
     constants.hpp
@@ -16,3 +12,5 @@ set(SOURCE_FILES
 )
 
 add_executable(exponent ${SOURCE_FILES})
+find_package(GSL REQUIRED)
+target_link_libraries(exponent GSL::gsl GSL::gslcblas)
