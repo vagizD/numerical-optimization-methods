@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(SOURCE_FILES
     test-exp.cpp
     constants.hpp
+    poly.hpp
     exp.hpp
+    test.hpp
 )
 
 add_executable(exponent ${SOURCE_FILES})

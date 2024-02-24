@@ -1,21 +1,17 @@
----
-IndentWidth: 2
-TabWidth: 2
-UseTab: Never
-AllowShortFunctionsOnASingleLine: None
-AlwaysBreakTemplateDeclarations: 'Yes'
+BasedOnStyle: Chromium
+IndentWidth: 4
 ColumnLimit: 80
-BraceWrapping:
-  AfterClass: true
-  AfterControlStatement: Always
-  AfterEnum: true
-  AfterFunction: true
-  AfterNamespace: true
-  AfterObjCDeclaration: true
-  AfterStruct: true
-  AfterUnion: true
-  BeforeCatch: true
-  BeforeElse: true
-  IndentBraces: true
-BreakBeforeBraces: Custom
+AccessModifierOffset: -4
+PointerAlignment: Right
+IncludeBlocks: Merge
+AllowShortBlocksOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# Only from clang-format 14.0.0
+AlignAfterOpenBracket: BlockIndent
+QualifierAlignment: Left
+SeparateDefinitionBlocks: Always
+EmptyLineAfterAccessModifier: Never
 
