@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gsl/gsl_linalg.h>
 #include <cstdint>
 #include <vector>
 #include "constants.hpp"
@@ -7,7 +8,63 @@
 
 namespace ADAAI {
 
-enum class MethodE { Taylor, Pade };
+enum class MethodE { Taylor, Pade, Chebyshev };
+
+template <typename F>
+constexpr gsl_vector *solveChebyshev(const int N) {
+    F coef[(N + 1) * (N + 1)] = {};
+    for (int k = 0; k < N; k++) {
+        for (int n = k + 1; n < N + 1; n++) {
+            coef[k][n] = -1;
+            if (n % 2 == 0) {
+                if (k == 1)
+                    coef[k][n] = n;
+
+                else if (k % 2 == 1)
+                    coef[k][n] = 2 * n;
+
+            } else {
+                if (k == 0)
+                    coef[k][n] = n;
+
+                else if (k % 2 == 0)
+                    coef[k][n] = 2 * n;
+            }
+        }
+    }
+    for (int n = 0; n < N + 1; n++) {
+        if (n % 2 == 0) {
+            if ((n / 2) % 2 == 0)
+                coef[N][n] = 1;
+            else
+                coef[N][n] = -1;
+        }
+    }
+
+    F b[N + 1] = {};
+    b[N] = 1;
+
+    gsl_matrix_view lhs;
+    gsl_vector_view rhs;
+
+    lhs = gsl_matrix_view_array(coef, N + 1, N + 1);
+    rhs = gsl_vector_view_array(b, N + 1);
+    gsl_vector *result = gsl_vector_alloc(N + 1);
+
+    gsl_permutation *lhsPermutation = gsl_permutation_alloc(N + 1);
+    gsl_linalg_LU_decomp(&lhs.matrix, lhsPermutation, nullptr);
+
+    gsl_linalg_LU_solve(&lhs.matrix, lhsPermutation, &rhs.vector, result);
+
+    gsl_permutation_free(lhsPermutation);
+    //    gsl_vector_free(result);
+    return result;
+}
+
+template <typename F>
+constexpr F evalCheyshevPolynomials(int N, F &arr){
+
+};
 
 template <typename F, size_t Capacity>
 constexpr std::pair<Poly<F, Capacity>, Poly<F, Capacity>>
