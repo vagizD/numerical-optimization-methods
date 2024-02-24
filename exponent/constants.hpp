@@ -5,6 +5,11 @@
 
 namespace ADAAI {
 
+#define M_SQRT2f 1.41421356237309504880f                 /* sqrt(2) */
+#define M_SQRT2l 1.414213562373095048801688724209698079L /* sqrt(2) */
+#define M_LOG2Ef 1.4426950408889634074f                  /* log_2 e */
+#define M_LOG2El 1.442695040888963407359924681001892137L /* log_2 e */
+
 template <typename F>
 constexpr inline F Ln2() {
     static_assert(std::is_floating_point_v<F>);
@@ -35,25 +40,6 @@ constexpr inline F Sqrt2() {
 
 template <typename F>
 constexpr inline F Eps = std::numeric_limits<F>::epsilon();
-
-template <typename F>
-constexpr inline std::array<F, 2> PadeNum = {1.0, 0.07692307692187728};
-
-template <typename F>
-constexpr inline std::array<F, 13> PadeDen = {
-    1.0,
-    -0.9230769230781227,
-    0.4230769230781227,
-    -0.12820512820572802,
-    0.028846153846353764,
-    -0.005128205128255092,
-    0.0007478632478732329,
-    -9.15750915767523e-05,
-    9.53907203930801e-06,
-    -8.479175146132913e-07,
-    6.359381359694395e-08,
-    -3.854170521123118e-09,
-    1.6059043838734714e-10};
 
 template <typename F>
 constexpr inline int MKExpTaylorOrder() {

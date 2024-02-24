@@ -1,7 +1,11 @@
 #pragma once
 
+#include <gsl/gsl_complex.h>
+#include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_linalg.h>
+#include <gsl/gsl_sf_trig.h>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 #include "constants.hpp"
 #include "poly.hpp"
@@ -11,37 +15,38 @@ namespace ADAAI {
 enum class MethodE { Taylor, Pade, Chebyshev };
 
 template <typename F>
-constexpr gsl_vector *solveChebyshev(const int N) {
-    F coef[(N + 1) * (N + 1)] = {};
+void solveChebyshev(const int N, std::vector<F> &res) {
+    double coef[(N + 1) * (N + 1)];
+    memset(coef, 0., sizeof(coef));
     for (int k = 0; k < N; k++) {
         for (int n = k + 1; n < N + 1; n++) {
-            coef[k][n] = -1;
+            coef[k * (N + 1) + n] = -1;
             if (n % 2 == 0) {
-                if (k == 1)
-                    coef[k][n] = n;
-
-                else if (k % 2 == 1)
-                    coef[k][n] = 2 * n;
-
+                if (k == 1) {
+                    coef[k * (N + 1) + n] = n;
+                } else if (k % 2 == 1) {
+                    coef[k * (N + 1) + n] = 2 * n;
+                }
             } else {
-                if (k == 0)
-                    coef[k][n] = n;
-
-                else if (k % 2 == 0)
-                    coef[k][n] = 2 * n;
+                if (k == 0) {
+                    coef[k * (N + 1) + n] = n;
+                } else if (k % 2 == 0) {
+                    coef[k * (N + 1) + n] = 2 * n;
+                }
             }
         }
     }
     for (int n = 0; n < N + 1; n++) {
         if (n % 2 == 0) {
             if ((n / 2) % 2 == 0)
-                coef[N][n] = 1;
+                coef[N * (N + 1) + n] = 1;
             else
-                coef[N][n] = -1;
+                coef[N * (N + 1) + n] = -1;
         }
     }
 
-    F b[N + 1] = {};
+    double b[N + 1];
+    memset(b, 0., sizeof(b));
     b[N] = 1;
 
     gsl_matrix_view lhs;
@@ -56,15 +61,13 @@ constexpr gsl_vector *solveChebyshev(const int N) {
 
     gsl_linalg_LU_solve(&lhs.matrix, lhsPermutation, &rhs.vector, result);
 
+    for (int i = 0; i <= N; ++i) {
+        res[i] = static_cast<F>(gsl_vector_get(result, i));
+    }
+
+    gsl_vector_free(result);
     gsl_permutation_free(lhsPermutation);
-    //    gsl_vector_free(result);
-    return result;
 }
-
-template <typename F>
-constexpr F evalCheyshevPolynomials(int N, F &arr){
-
-};
 
 template <typename F, size_t Capacity>
 constexpr std::pair<Poly<F, Capacity>, Poly<F, Capacity>>
@@ -85,14 +88,6 @@ solvePade(Poly<F, Capacity> T, Poly<F, Capacity> E, size_t n) {
     }
 
     return std::make_pair(C * E + D * T, D);
-}
-
-template <typename F>
-constexpr F PadeExp(F a_x) {
-    Poly<F, PadeNum<F>.size()> P(PadeNum<F>);
-    Poly<F, PadeDen<F>.size()> Q(PadeDen<F>);
-
-    return P.eval(a_x) / Q.eval(a_x);
 }
 
 // constexpr -- compile-time evaluation
@@ -151,9 +146,7 @@ constexpr F Exp(F a_x) {
 
         for (int i = 0; i < st.size(); ++i)
             y1 += st[st.size() - i - 1];
-    }
-
-    if constexpr (M == MethodE::Pade) {
+    } else if constexpr (M == MethodE::Pade) {
         std::array<F, Capacity> TaylorCoef = {1.0};
         for (int k = 1; k <= N; k++) {
             TaylorCoef[k] = TaylorCoef[k - 1] / k;
@@ -168,6 +161,13 @@ constexpr F Exp(F a_x) {
 
         y1 = P.eval(arg) / Q.eval(arg);
         // y1 = PadeExp<F>(arg);
+    } else if constexpr (M == MethodE::Chebyshev) {
+        std::vector<F> c(N + 2);
+        solveChebyshev(N + 1, c);
+        for (int i = 0; i <= N + 1; ++i) {
+            F acos = static_cast<F>(gsl_complex_arccos_real(a_x).dat[0]);
+            y1 += c[i] * static_cast<F>(gsl_sf_cos(i * acos));
+        }
     }
 
     return std::ldexp(y1, n);  // return 2^n * y1

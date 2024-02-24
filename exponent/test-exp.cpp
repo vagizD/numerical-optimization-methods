@@ -32,6 +32,17 @@ int main() {
             std::cout << "=> Taylor | Max relative error: " << relError
                       << std::endl;
         }
+        //        {
+        //            auto [absError, relError] = ADAAI::makeTests<
+        //                    float>(-r, r, step,
+        //                    ADAAI::Exp<ADAAI::MethodE::Chebyshev, float, N>);
+        //            std::cout << "=> Chebyshev | Max absolute error: " <<
+        //            absError
+        //                      << std::endl;
+        //            std::cout << "=> Chebyshev | Max relative error: " <<
+        //            relError
+        //                      << std::endl;
+        //        }
         std::cout << std::endl;
     }
     {
@@ -57,6 +68,17 @@ int main() {
             std::cout << "=> Taylor | Max relative error: " << relError
                       << std::endl;
         }
+        //        {
+        //            auto [absError, relError] = ADAAI::makeTests<
+        //                    double>(-r, r, step,
+        //                    ADAAI::Exp<ADAAI::MethodE::Chebyshev, double, N>);
+        //            std::cout << "=> Chebyshev | Max absolute error: " <<
+        //            absError
+        //                      << std::endl;
+        //            std::cout << "=> Chebyshev | Max relative error: " <<
+        //            relError
+        //                      << std::endl;
+        //        }
         std::cout << std::endl;
     }
     {
@@ -81,6 +103,18 @@ int main() {
             std::cout << "=> Taylor | Max relative error: " << relError
                       << std::endl;
         }
+        //        {
+        //            auto [absError, relError] = ADAAI::makeTests<
+        //                    long double>(-r, r, step,
+        //                    ADAAI::Exp<ADAAI::MethodE::Chebyshev, long double,
+        //                    N>);
+        //            std::cout << "=> Chebyshev | Max absolute error: " <<
+        //            absError
+        //                      << std::endl;
+        //            std::cout << "=> Chebyshev | Max relative error: " <<
+        //            relError
+        //                      << std::endl;
+        //        }
     }
 
     // LOCAL RESULTS
