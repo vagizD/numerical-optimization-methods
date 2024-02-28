@@ -163,8 +163,8 @@ constexpr F Exp(F a_x) {
         std::vector<F> c(N + 2);
         solveChebyshev(N + 1, c);
         for (int i = 0; i <= N + 1; ++i) {
-            F acos = gsl_complex_arccos_real(static_cast<float>(arg)).dat[0];
-            y1 += c[i] * gsl_sf_cos(static_cast<float>(i) * acos);
+            F acos = gsl_complex_arccos_real(arg).dat[0];
+            y1 += c[i] * gsl_sf_cos(i * acos);
         }
     }
 
