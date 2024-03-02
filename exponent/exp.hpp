@@ -2,6 +2,7 @@
 
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
+#include <gsl/gsl_fft_complex.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_sf_trig.h>
 #include <cstdint>
@@ -13,6 +14,28 @@
 namespace ADAAI {
 
 enum class Method { Taylor, Pade, Chebyshev };
+
+template <typename F>
+F chebyshevPoly(F arg, int k) {
+    F acos = gsl_complex_arccos_real(arg).dat[0];
+    return gsl_sf_cos(k * acos);
+}
+
+template <typename F>
+void chebyshevGaussQuadrature(const int N, std::vector<F> &res) {
+    std::vector<F> nodes(0, N + 2);
+    for (size_t i = 1; i <= N + 1; i++) {
+        nodes[i] = std::cos((2 * i - 1) * PI<F>() / 2 * (N + 1));
+    }
+
+    for (size_t i = 0; i <= N + 1; i++) {
+        for (const auto &x : nodes) {
+            res[i] += std::exp(gsl_complex_arccos_real(x).dat[0]) *
+                      chebyshevPoly(x, i);
+        }
+        res[i] = (res[i] * 2) / (N + 1);
+    }
+}
 
 template <typename F>
 void solveChebyshev(const int N, std::vector<F> &res) {
@@ -163,11 +186,9 @@ constexpr F Exp(F a_x) {
         std::vector<F> c(N + 2);
         solveChebyshev(N + 1, c);
         for (int i = 0; i <= N + 1; ++i) {
-            F acos = gsl_complex_arccos_real(arg).dat[0];
-            y1 += c[i] * gsl_sf_cos(i * acos);
+            y1 += c[i] * chebyshevPoly(arg, i);
         }
     }
-
     return std::ldexp(y1, n);  // return 2^n * y1
 }
 

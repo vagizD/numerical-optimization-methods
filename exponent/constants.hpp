@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cmath>
+#include <vector>
 
 namespace ADAAI {
 
@@ -9,6 +10,20 @@ namespace ADAAI {
 #define M_SQRT2l 1.414213562373095048801688724209698079L /* sqrt(2) */
 #define M_LOG2Ef 1.4426950408889634074f                  /* log_2 e */
 #define M_LOG2El 1.442695040888963407359924681001892137L /* log_2 e */
+
+template <typename F>
+constexpr inline F PI() {
+    static_assert(std::is_floating_point_v<F>);
+    if (std::is_same<F, float>::value) {
+        return M_1_PIf;
+    }
+    if (std::is_same<F, double>::value) {
+        return M_1_PI;
+    }
+    if (std::is_same<F, long double>::value) {
+        return M_1_PIl;
+    }
+}
 
 template <typename F>
 constexpr inline F Ln2() {
