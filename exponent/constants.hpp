@@ -10,6 +10,8 @@ namespace ADAAI {
 #define M_SQRT2l 1.414213562373095048801688724209698079L /* sqrt(2) */
 #define M_LOG2Ef 1.4426950408889634074f                  /* log_2 e */
 #define M_LOG2El 1.442695040888963407359924681001892137L /* log_2 e */
+#define M_PIl 3.141592653589793238462643383279502884L    /* pi      */
+#define M_PIf 3.14159265358979323846f                    /* pi      */
 #define M_EPIf 23.14069263277926900572f                  /* e ^ pi  */
 #define M_EPI 23.14069263277926900572908636794854738     /* e ^ pi  */
 #define M_EPIl 23.14069263277926900572908636794854738L   /* e ^ pi  */
@@ -32,13 +34,13 @@ template <typename F>
 constexpr inline F PI() {
     static_assert(std::is_floating_point_v<F>);
     if (std::is_same<F, float>::value) {
-        return M_1_PIf;
+        return M_PIf;
     }
     if (std::is_same<F, double>::value) {
-        return M_1_PI;
+        return M_PI;
     }
     if (std::is_same<F, long double>::value) {
-        return M_1_PIl;
+        return M_PIl;
     }
 }
 
