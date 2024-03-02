@@ -3,6 +3,7 @@
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_fft_complex.h>
+#include <gsl/gsl_fft_halfcomplex.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_sf_trig.h>
 #include <cstdint>
@@ -18,9 +19,9 @@ enum class Method { Taylor, Pade, Chebyshev, Fourier };
 template <typename F>
 F getFourierCoef(const int k) {
     if (k % 2 == 0) {
-        return (EPI<F>() - 1) / (k * k + 1);
+        return (2 / PI<F>()) * (EPI<F>() - 1) / (k * k + 1);
     } else {
-        return (-EPI<F>() - 1) / (k * k + 1);
+        return (2 / PI<F>()) * (-EPI<F>() - 1) / (k * k + 1);
     }
 }
 
@@ -62,11 +63,11 @@ F solveFFT(const int N, F x) {
     memset(packed, 0.0, sizeof(packed));
     for (int i = 0; i < N + 1; ++i) {
         packed[i << 1] = a[i];
-        //        std::cout << "real a_" << i << " := " << getFourierCoef<F>(i)
-        //        << std::endl; std::cout << "estimated a_" << i << " := " <<
-        //        a[i] << std::endl; std::cout << std::abs(a[i] -
-        //        getFourierCoef<double>(i)) << std::endl;
-        packed[i << 1] = getFourierCoef<double>(i);
+//                std::cout << "real a_" << i << " := " << getFourierCoef<F>(i)
+//                << std::endl; std::cout << "estimated a_" << i << " := " <<
+//                a[i] << std::endl; std::cout << std::abs(a[i] -
+//                getFourierCoef<double>(i)) << std::endl;
+//        packed[i << 1] = getFourierCoef<double>(i);
     }
 
     gsl_fft_complex_wavetable *wt = gsl_fft_complex_wavetable_alloc(N + 1);
@@ -86,7 +87,14 @@ F solveFFT(const int N, F x) {
             break;
         i++, diff = std::abs(x - next);
     }
-    return static_cast<F>(packed[i << 1]);
+
+//    F res = 0;
+//    res += packed[0] / 2;
+//    for(int j = 1; j < N + 1; j++){
+//        res += packed[j << 1]*std::cos(j*x);
+//    }
+//    return res;
+    return static_cast<F>(packed[(i) << 1]);
 }
 
 template <typename F>
@@ -241,20 +249,24 @@ constexpr F Exp(F a_x) {
             y1 += c[i] * chebyshevPoly(arg, i);
         }
     } else if constexpr (M == Method::Fourier) {
-        if (arg < 0) {
-            for (int k = 1; k <= N; k++) {
-                st.push_back(st.back() * arg / k);
+//        if (arg < 0) {
+//            for (int k = 1; k <= N; k++) {
+//                st.push_back(st.back() * arg / k);
+//            }
+//            // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
+//            // we summarize the terms of the Taylor formula in ascending order
+//            // of the modulus of the terms to minimize the error of calculations
+//            // in floating point numbers arithmetic
+//
+//            for (int i = 0; i < st.size(); ++i)
+//                y1 += st[st.size() - i - 1];
+//        } else {
+            if(y0 < 0.0){
+                n -= 1, y0 += 1;
+                arg = y0 * Ln2<F>();
             }
-            // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
-            // we summarize the terms of the Taylor formula in ascending order
-            // of the modulus of the terms to minimize the error of calculations
-            // in floating point numbers arithmetic
-
-            for (int i = 0; i < st.size(); ++i)
-                y1 += st[st.size() - i - 1];
-        } else {
             y1 = solveFFT(N, arg);
-        }
+//        }
     }
     return std::ldexp(y1, n);  // return 2^n * y1
 }
