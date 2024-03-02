@@ -13,7 +13,16 @@
 
 namespace ADAAI {
 
-enum class Method { Taylor, Pade, Chebyshev };
+enum class Method { Taylor, Pade, Chebyshev, Fourier };
+
+template <typename F>
+F getFourierCoef(const int k) {
+    if (k % 2 == 0) {
+        return (EPI<F>() - 1) / (k * k + 1);
+    } else {
+        return (-EPI<F>() - 1) / (k * k + 1);
+    }
+}
 
 template <typename F>
 F chebyshevPoly(F arg, int k) {
