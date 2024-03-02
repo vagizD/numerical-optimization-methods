@@ -12,3 +12,5 @@ set(SOURCE_FILES
 )
 
 add_executable(exponent ${SOURCE_FILES})
+find_package(GSL REQUIRED)
+target_link_libraries(exponent GSL::gsl GSL::gslcblas)

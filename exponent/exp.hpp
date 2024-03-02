@@ -1,13 +1,72 @@
 #pragma once
 
+#include <gsl/gsl_complex.h>
+#include <gsl/gsl_complex_math.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_sf_trig.h>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 #include "constants.hpp"
 #include "poly.hpp"
 
 namespace ADAAI {
 
-enum class MethodE { Taylor, Pade };
+enum class Method { Taylor, Pade, Chebyshev };
+
+template <typename F>
+void solveChebyshev(const int N, std::vector<F> &res) {
+    double coef[(N + 1) * (N + 1)];
+    memset(coef, 0., sizeof(coef));
+    for (int k = 0; k < N; k++) {
+        coef[k * (N + 1) + k] = -1;
+        for (int n = k + 1; n < N + 1; n++) {
+            if (n % 2 == 0) {
+                if (k % 2 == 1) {
+                    coef[k * (N + 1) + n] = 2 * n;
+                }
+            } else {
+                if (k == 0) {
+                    coef[k * (N + 1) + n] = n;
+                } else if (k % 2 == 0) {
+                    coef[k * (N + 1) + n] = 2 * n;
+                }
+            }
+        }
+    }
+    for (int n = 0; n < N + 1; n++) {
+        if (n % 4 == 0) {
+            coef[N * (N + 1) + n] = 1;
+        } else if (n % 2 == 0) {
+            coef[N * (N + 1) + n] = -1;
+        }
+    }
+
+    double b[N + 1];
+    memset(b, 0., sizeof(b));
+    b[N] = 1;
+
+    gsl_matrix_view lhs;
+    gsl_vector_view rhs;
+
+    lhs = gsl_matrix_view_array(coef, N + 1, N + 1);
+    rhs = gsl_vector_view_array(b, N + 1);
+    gsl_vector *result = gsl_vector_alloc(N + 1);
+
+    int signum;
+
+    gsl_permutation *lhsPermutation = gsl_permutation_alloc(N + 1);
+    gsl_linalg_LU_decomp(&lhs.matrix, lhsPermutation, &signum);
+
+    gsl_linalg_LU_solve(&lhs.matrix, lhsPermutation, &rhs.vector, result);
+
+    for (int i = 0; i <= N; ++i) {
+        res[i] = static_cast<F>(gsl_vector_get(result, i));
+    }
+
+    gsl_vector_free(result);
+    gsl_permutation_free(lhsPermutation);
+}
 
 template <typename F, size_t Capacity>
 constexpr std::pair<Poly<F, Capacity>, Poly<F, Capacity>>
@@ -30,16 +89,8 @@ solvePade(Poly<F, Capacity> T, Poly<F, Capacity> E, size_t n) {
     return std::make_pair(C * E + D * T, D);
 }
 
-template <typename F>
-constexpr F PadeExp(F a_x) {
-    Poly<F, PadeNum<F>.size()> P(PadeNum<F>);
-    Poly<F, PadeDen<F>.size()> Q(PadeDen<F>);
-
-    return P.eval(a_x) / Q.eval(a_x);
-}
-
 // constexpr -- compile-time evaluation
-template <MethodE M = MethodE::Pade, typename F, size_t Capacity>
+template <Method M = Method::Pade, typename F, size_t Capacity>
 constexpr F Exp(F a_x) {
     // F must be floating-point number
     static_assert(std::is_floating_point_v<F>);
@@ -83,7 +134,7 @@ constexpr F Exp(F a_x) {
     constexpr int N =
         MKExpTaylorOrder<F>();  // compile-time evaluation of order
 
-    if constexpr (M == MethodE::Taylor) {
+    if constexpr (M == Method::Taylor) {
         for (int k = 1; k <= N; k++) {
             st.push_back(st.back() * arg / k);
         }
@@ -94,9 +145,7 @@ constexpr F Exp(F a_x) {
 
         for (int i = 0; i < st.size(); ++i)
             y1 += st[st.size() - i - 1];
-    }
-
-    if constexpr (M == MethodE::Pade) {
+    } else if constexpr (M == Method::Pade) {
         std::array<F, Capacity> TaylorCoef = {1.0};
         for (int k = 1; k <= N; k++) {
             TaylorCoef[k] = TaylorCoef[k - 1] / k;
@@ -110,7 +159,13 @@ constexpr F Exp(F a_x) {
         );
 
         y1 = P.eval(arg) / Q.eval(arg);
-        // y1 = PadeExp<F>(arg);
+    } else if constexpr (M == Method::Chebyshev) {
+        std::vector<F> c(N + 2);
+        solveChebyshev(N + 1, c);
+        for (int i = 0; i <= N + 1; ++i) {
+            F acos = gsl_complex_arccos_real(arg).dat[0];
+            y1 += c[i] * gsl_sf_cos(i * acos);
+        }
     }
 
     return std::ldexp(y1, n);  // return 2^n * y1
