@@ -26,24 +26,67 @@ F getFourierCoef(const int k) {
 
 template <typename F>
 F chebyshevPoly(F arg, int k) {
-    F acos = gsl_complex_arccos_real(arg).dat[0];
-    return gsl_sf_cos(k * acos);
+    if (k == 0) {
+        return 1;
+    }
+    F fi = 1, se = arg;
+    for (int i = 2; i <= k; ++i) {
+        F t = static_cast<F>(2) * arg * se - fi;
+        fi = se;
+        se = t;
+    }
+    return se;
 }
 
 template <typename F>
 void chebyshevGaussQuadrature(const int N, std::vector<F> &res) {
-    std::vector<F> nodes(0, N + 2);
-    for (size_t i = 1; i <= N + 1; i++) {
-        nodes[i] = std::cos((2 * i - 1) * PI<F>() / 2 * (N + 1));
+    std::vector<F> nodes(N + 2);
+    for (int i = 1; i <= N + 1; i++) {
+        nodes[i] = std::cos((2 * i - 1) * PI<F>() / (2 * (N + 1)));
     }
 
-    for (size_t i = 0; i <= N + 1; i++) {
-        for (const auto &x : nodes) {
-            res[i] += std::exp(gsl_complex_arccos_real(x).dat[0]) *
-                      chebyshevPoly(x, i);
+    for (int i = 0; i < N + 1; i++) {
+        for (int j = 1; j <= N + 1; j++) {
+            F acos = std::acos(nodes[j]);
+            res[i] += std::exp(acos) * chebyshevPoly(nodes[j], i);
         }
         res[i] = (res[i] * 2) / (N + 1);
     }
+}
+
+template <typename F>
+F solveFFT(const int N, F x) {
+    std::vector<F> a(N + 1);
+    chebyshevGaussQuadrature<F>(N, a);
+    double packed[(N + 1) << 1];
+    memset(packed, 0.0, sizeof(packed));
+    for (int i = 0; i < N + 1; ++i) {
+        packed[i << 1] = a[i];
+        //        std::cout << "real a_" << i << " := " << getFourierCoef<F>(i)
+        //        << std::endl; std::cout << "estimated a_" << i << " := " <<
+        //        a[i] << std::endl; std::cout << std::abs(a[i] -
+        //        getFourierCoef<double>(i)) << std::endl;
+        packed[i << 1] = getFourierCoef<double>(i);
+    }
+
+    gsl_fft_complex_wavetable *wt = gsl_fft_complex_wavetable_alloc(N + 1);
+    gsl_fft_complex_workspace *ws = gsl_fft_complex_workspace_alloc(N + 1);
+
+    // packed[0] /= 2;
+    gsl_fft_complex_inverse(packed, 1, N + 1, wt, ws);
+
+    gsl_fft_complex_wavetable_free(wt);
+    gsl_fft_complex_workspace_free(ws);
+
+    int i = 0;
+    F diff = x;
+    while (i < N) {
+        F next = 2 * PI<F>() * static_cast<F>(i + 1) / static_cast<F>(N + 1);
+        if (std::abs(x - next) >= diff)
+            break;
+        i++, diff = std::abs(x - next);
+    }
+    return static_cast<F>(packed[i << 1]);
 }
 
 template <typename F>
@@ -196,6 +239,21 @@ constexpr F Exp(F a_x) {
         solveChebyshev(N + 1, c);
         for (int i = 0; i <= N + 1; ++i) {
             y1 += c[i] * chebyshevPoly(arg, i);
+        }
+    } else if constexpr (M == Method::Fourier) {
+        if (arg < 0) {
+            for (int k = 1; k <= N; k++) {
+                st.push_back(st.back() * arg / k);
+            }
+            // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
+            // we summarize the terms of the Taylor formula in ascending order
+            // of the modulus of the terms to minimize the error of calculations
+            // in floating point numbers arithmetic
+
+            for (int i = 0; i < st.size(); ++i)
+                y1 += st[st.size() - i - 1];
+        } else {
+            y1 = solveFFT(N, arg);
         }
     }
     return std::ldexp(y1, n);  // return 2^n * y1

@@ -58,6 +58,14 @@ void runTests(F a_l, F a_r, F a_step, const std::string &a_typename) {
         std::cout << "=> CHEBYSHEV  | Max relative error: " << relError
                   << std::endl;
     }
+    {
+        auto [absError, relError] =
+            makeTests<F>(a_l, a_r, a_step, Exp<Method::Fourier, F, Capacity>);
+        std::cout << "=> Fourier    | Max absolute error: " << absError
+                  << std::endl;
+        std::cout << "=> Fourier    | Max relative error: " << relError
+                  << std::endl;
+    }
     std::cout << std::endl;
 }
 }  // namespace ADAAI
