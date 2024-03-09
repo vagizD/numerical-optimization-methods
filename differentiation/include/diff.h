@@ -19,7 +19,7 @@ double Differentiator(const Callable& F, double x, double y);
 
 class AAD22 {
    public:
-    AAD22(): m_val(0) {};
+    AAD22() : m_val(0){};
     explicit AAD22(double v) : m_val(v) {}
     AAD22(Variable var, double v) : m_val(v) {
         if (var == Variable::X) {
