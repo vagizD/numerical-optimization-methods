@@ -1,15 +1,12 @@
+#include "../include/stencil.h"
 #include <cassert>
 #include <cmath>
 #include <stdexcept>
-#include "../include/diff.h"
 
 /* =================== STENCIL APPROXIMATION METHODS =================== */
 
 template <typename Callable, Derivative D>
-double approxStencil3(const Callable& F,
-                      double x,
-                      double y,
-                      double step = 1e-4) {
+double approxStencil3(Callable F, double x, double y, double step) {
     double hx = step, hy = step;
     if (std::abs(x) > 1) {
         hx *= std::abs(x);
@@ -28,19 +25,14 @@ double approxStencil3(const Callable& F,
         case Derivative::YY:
             return (F(x, y + hy) - 2 * F(x, y) + F(x, y - hy)) / (hy * hy);
         case Derivative::XY:
-            double d_plus =
-                approxStencil3<Callable, Derivative::X>(F, x, y + hy, step);
-            double d_minus =
-                approxStencil3<Callable, Derivative::X>(F, x, y - hy, step);
+            double d_plus = approxStencil3<Callable, Derivative::X>(F, x, y + hy, step);
+            double d_minus = approxStencil3<Callable, Derivative::X>(F, x, y - hy, step);
             return (d_plus - d_minus) / (2 * hy);
     }
 }
 
 template <typename Callable, Derivative D>
-double approxStencil5(const Callable& F,
-                      double x,
-                      double y,
-                      double step = 1e-4) {
+double approxStencil5(Callable F, double x, double y, double step) {
     double hx = step, hy = step;
     if (std::abs(x) > 1) {
         hx *= std::abs(x);
@@ -69,12 +61,9 @@ double approxStencil5(const Callable& F,
         case Derivative::XY:
             double d_plus2 =
                 approxStencil5<Callable, Derivative::X>(F, x, y + 2 * hy, step);
-            double d_plus1 =
-                approxStencil5<Callable, Derivative::X>(F, x, y + hy, step);
-            double d_zero =
-                approxStencil5<Callable, Derivative::X>(F, x, y, step);
-            double d_minus1 =
-                approxStencil5<Callable, Derivative::X>(F, x, y - hy, step);
+            double d_plus1 = approxStencil5<Callable, Derivative::X>(F, x, y + hy, step);
+            double d_zero = approxStencil5<Callable, Derivative::X>(F, x, y, step);
+            double d_minus1 = approxStencil5<Callable, Derivative::X>(F, x, y - hy, step);
             double d_minus2 =
                 approxStencil5<Callable, Derivative::X>(F, x, y - 2 * hy, step);
             return (-d_plus2 + +16 * d_plus1 + -30 * d_zero + +16 * d_minus1 +
@@ -83,14 +72,11 @@ double approxStencil5(const Callable& F,
     }
 }
 
-/* =========== STENCIL APPROXIMATION METHODS WITH RICHARDSON'S EXTRAPOLATION =========== */
+/* =========== STENCIL APPROXIMATION METHODS WITH RICHARDSON'S EXTRAPOLATION
+ * =========== */
 
 template <typename Callable, Derivative D, DiffMethod M>
-double approxStencilExtra(const Callable& F,
-                          double x,
-                          double y,
-                          double step = 1e-4,
-                          int n = 10) {
+double approxStencilExtra(Callable F, double x, double y, double step, int n) {
     assert(n % 2 == 0);
     double der_approx, der_approx_grid;
     switch (M) {

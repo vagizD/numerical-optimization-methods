@@ -2,20 +2,14 @@
 
 #include <array>
 
-enum class DiffMethod {
-    Stencil3,
-    Stencil3Extra,
-    Stencil5,
-    Stencil5Extra,
-    FwdADD
-};
+enum class DiffMethod { Stencil3, Stencil3Extra, Stencil5, Stencil5Extra, FwdADD };
 
 enum class Derivative { X, Y, XX, YY, XY };
 
 enum class Variable { X, Y };
 
 template <Derivative D, DiffMethod M, typename Callable>
-double Differentiator(const Callable& F, double x, double y);
+double Differentiator(Callable F, double x, double y);
 
 class AAD22 {
    public:
@@ -42,15 +36,15 @@ class AAD22 {
     AAD22 operator*(const AAD22& rhs) const;
     AAD22 operator/(const AAD22& rhs) const;
 
-    AAD22& operator+=(const double rhs);
-    AAD22& operator-=(const double rhs);
-    AAD22& operator*=(const double rhs);
-    AAD22& operator/=(const double rhs);
+    AAD22& operator+=(double rhs);
+    AAD22& operator-=(double rhs);
+    AAD22& operator*=(double rhs);
+    AAD22& operator/=(double rhs);
 
-    AAD22 operator+(const double rhs) const;
-    AAD22 operator-(const double rhs) const;
-    AAD22 operator*(const double rhs) const;
-    AAD22 operator/(const double rhs) const;
+    AAD22 operator+(double rhs) const;
+    AAD22 operator-(double rhs) const;
+    AAD22 operator*(double rhs) const;
+    AAD22 operator/(double rhs) const;
 
     friend AAD22 sin(const AAD22& arg);
     friend AAD22 cos(const AAD22& arg);

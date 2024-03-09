@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(SOURCE_FILES
         src/diff.cpp
+        src/stencil.cpp
         src/test_diff.cpp
 )
 
