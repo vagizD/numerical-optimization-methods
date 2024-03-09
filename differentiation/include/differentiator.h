@@ -44,33 +44,33 @@ double approxStencil5(Callable F, double x, double y, double step = 1e-4) {
 
     switch (D) {
         case Derivative::X:
-            return (-F(x + 2 * hx, y) + 8 * F(x + hx, y) - 8 * F(x - hx, y) + F(x - 2 * hx, y)) /
+            return (-F(x + 2 * hx, y) + 8 * F(x + hx, y) - 8 * F(x - hx, y) +
+                    F(x - 2 * hx, y)) /
                    (12 * hx);
         case Derivative::Y:
-            return (-F(x, y + 2 * hy) + 8 * F(x, y + hy) - 8 * F(x, y - hy) + F(x, y - 2 * hy)) /
+            return (-F(x, y + 2 * hy) + 8 * F(x, y + hy) - 8 * F(x, y - hy) +
+                    F(x, y - 2 * hy)) /
                    (12 * hy);
         case Derivative::XX:
-            return (-F(x + 2 * hx, y) + 16 * F(x + hx, y) - 30 * F(x, y) + 16 * F(x - hx, y) -
-                    F(x - 2 * hx, y)) /
+            return (-F(x + 2 * hx, y) + 16 * F(x + hx, y) - 30 * F(x, y) +
+                    16 * F(x - hx, y) - F(x - 2 * hx, y)) /
                    (12 * hx * hx);
         case Derivative::YY:
-            return (-F(x, y + 2 * hy) + 16 * F(x, y + hy) - 30 * F(x, y) + 16 * F(x, y - hy) -
-                    F(x, y - 2 * hy)) /
+            return (-F(x, y + 2 * hy) + 16 * F(x, y + hy) - 30 * F(x, y) +
+                    16 * F(x, y - hy) - F(x, y - 2 * hy)) /
                    (12 * hy * hy);
         case Derivative::XY:
-            double d_plus2 = approxStencil5<Callable, Derivative::X>(F, x, y + 2 * hy, step);
-            double d_plus1 = approxStencil5<Callable, Derivative::X>(F, x, y + hy, step);
-            double d_zero = approxStencil5<Callable, Derivative::X>(F, x, y, step);
-            double d_minus1 = approxStencil5<Callable, Derivative::X>(F, x, y - hy, step);
-            double d_minus2 = approxStencil5<Callable, Derivative::X>(F, x, y - 2 * hy, step);
-            return (-d_plus2 + 16 * d_plus1 - 30 * d_zero + 16 * d_minus1 - d_minus2) / (12 * hy);
+            return (F(x + hx, y + hy) - F(x - hx, y + hy) - F(x + hx, y - hy) +
+                    F(x - hx, y - hy)) /
+                   (4 * hx * hy);
     }
 }
 
 // ======= STENCIL APPROXIMATION METHODS WITH RICHARDSON'S EXTRAPOLATION =======
 
 template <typename Callable, Derivative D, DiffMethod M>
-double approxStencilExtra(Callable F, double x, double y, double step = 1e-4, int n = 10) {
+double
+approxStencilExtra(Callable F, double x, double y, double step = 1e-4, int n = 10) {
     assert(n % 2 == 0);
     double der_approx, der_approx_grid;
     switch (M) {
