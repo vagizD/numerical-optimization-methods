@@ -1,6 +1,4 @@
-#include "../include/diff.h"
-#include "../include/stencil.h"
-
+#include "aad.h"
 #include <cmath>
 #include <stdexcept>
 
@@ -41,7 +39,7 @@ AAD22 AAD22::operator-() const {
     return result;
 }
 
-AAD22& AAD22::operator+=(const AAD22& rhs) {
+AAD22 &AAD22::operator+=(const AAD22 &rhs) {
     m_val += rhs.m_val;
     m_d1[0] += rhs.m_d1[0];
     m_d1[1] += rhs.m_d1[1];
@@ -51,13 +49,13 @@ AAD22& AAD22::operator+=(const AAD22& rhs) {
     return *this;
 }
 
-AAD22 AAD22::operator+(const AAD22& rhs) const {
+AAD22 AAD22::operator+(const AAD22 &rhs) const {
     AAD22 result = *this;
     result += rhs;
     return result;
 }
 
-AAD22& AAD22::operator-=(const AAD22& rhs) {
+AAD22 &AAD22::operator-=(const AAD22 &rhs) {
     m_val -= rhs.m_val;
     m_d1[0] -= rhs.m_d1[0];
     m_d1[1] -= rhs.m_d1[1];
@@ -67,13 +65,13 @@ AAD22& AAD22::operator-=(const AAD22& rhs) {
     return *this;
 }
 
-AAD22 AAD22::operator-(const AAD22& rhs) const {
+AAD22 AAD22::operator-(const AAD22 &rhs) const {
     AAD22 result = *this;
     result -= rhs;
     return result;
 }
 
-AAD22& AAD22::operator*=(const AAD22& rhs) {
+AAD22 &AAD22::operator*=(const AAD22 &rhs) {
     m_d2[0] = m_d2[0] * rhs.m_val + 2 * m_d1[0] * rhs.m_d1[0] + m_val * rhs.m_d2[0];
     m_d2[1] = m_d2[1] * rhs.m_val + 2 * m_d1[1] * rhs.m_d1[1] + m_val * rhs.m_d2[1];
     m_d2[2] = m_d2[2] * rhs.m_val + m_d1[0] * rhs.m_d1[1] + m_d1[1] * rhs.m_d1[0] +
@@ -87,13 +85,13 @@ AAD22& AAD22::operator*=(const AAD22& rhs) {
     return *this;
 }
 
-AAD22 AAD22::operator*(const AAD22& rhs) const {
+AAD22 AAD22::operator*(const AAD22 &rhs) const {
     AAD22 result = *this;
     result *= rhs;
     return result;
 }
 
-AAD22& AAD22::operator/=(const AAD22& rhs) {
+AAD22 &AAD22::operator/=(const AAD22 &rhs) {
     if (rhs.m_val == 0.0) {
         throw std::runtime_error("Division by zero\n");
     }
@@ -120,13 +118,13 @@ AAD22& AAD22::operator/=(const AAD22& rhs) {
     return *this;
 }
 
-AAD22 AAD22::operator/(const AAD22& rhs) const {
+AAD22 AAD22::operator/(const AAD22 &rhs) const {
     AAD22 result = *this;
     result /= rhs;
     return result;
 }
 
-AAD22& AAD22::operator+=(const double rhs) {
+AAD22 &AAD22::operator+=(const double rhs) {
     m_val += rhs;
     return *this;
 }
@@ -137,7 +135,7 @@ AAD22 AAD22::operator+(const double rhs) const {
     return result;
 }
 
-AAD22& AAD22::operator-=(const double rhs) {
+AAD22 &AAD22::operator-=(const double rhs) {
     m_val -= rhs;
     return *this;
 }
@@ -148,7 +146,7 @@ AAD22 AAD22::operator-(const double rhs) const {
     return result;
 }
 
-AAD22& AAD22::operator*=(const double rhs) {
+AAD22 &AAD22::operator*=(const double rhs) {
     m_val *= rhs;
     m_d1[0] *= rhs;
     m_d1[1] *= rhs;
@@ -164,7 +162,7 @@ AAD22 AAD22::operator*(const double rhs) const {
     return result;
 }
 
-AAD22& AAD22::operator/=(const double rhs) {
+AAD22 &AAD22::operator/=(const double rhs) {
     if (rhs == 0.0) {
         throw std::runtime_error("Division by zero\n");
     }
@@ -185,7 +183,7 @@ AAD22 AAD22::operator/(const double rhs) const {
 
 // ================ AAD22 FUNCTIONS IMPLEMENTATION ================
 
-AAD22 sin(const AAD22& arg) {
+AAD22 sin(const AAD22 &arg) {
     AAD22 res;
     double arg_cos = std::cos(arg.m_val);
     double arg_sin = std::sin(arg.m_val);
@@ -198,7 +196,7 @@ AAD22 sin(const AAD22& arg) {
     return res;
 }
 
-AAD22 cos(const AAD22& arg) {
+AAD22 cos(const AAD22 &arg) {
     AAD22 res;
     double arg_cos = std::cos(arg.m_val);
     double arg_sin = std::sin(arg.m_val);
@@ -211,7 +209,7 @@ AAD22 cos(const AAD22& arg) {
     return res;
 }
 
-AAD22 exp(const AAD22& arg) {
+AAD22 exp(const AAD22 &arg) {
     AAD22 res;
     double arg_exp = std::exp(arg.m_val);
     res.m_val = arg_exp;
@@ -222,20 +220,3 @@ AAD22 exp(const AAD22& arg) {
     res.m_d2[2] = arg_exp * (arg.m_d2[2] + arg.m_d1[0] * arg.m_d1[1]);
     return res;
 }
-
-// ================ DIFFERENTIATOR IMPLEMENTATION ================
-
-//template <Derivative D, DiffMethod M, typename Callable>
-//double Differentiator(Callable& F, double x, double y) {
-//    if constexpr (M == DiffMethod::Stencil3) {
-//        return approxStencil3<Callable, D>(F, x, y);
-//    } else if constexpr (M == DiffMethod::Stencil3Extra) {
-//        return approxStencilExtra<Callable, D, DiffMethod::Stencil3>(F, x, y);
-//    } else if constexpr (M == DiffMethod::Stencil5) {
-//        return approxStencil5<Callable, D>(F, x, y);
-//    } else if constexpr (M == DiffMethod::Stencil5Extra) {
-//        return approxStencilExtra<Callable, D, DiffMethod::Stencil5>(F, x, y);
-//    } else if constexpr (M == DiffMethod::FwdADD) {
-//        return F(x, y).get_derivative(D);
-//    }
-//}
