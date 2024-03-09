@@ -10,17 +10,17 @@ enum class DiffMethod {
     FwdADD
 };
 
-enum class PartialDer { X, Y, XX, YY, XY };
+enum class Derivative { X, Y, XX, YY, XY };
 
 enum class Variable { X, Y };
 
-template <PartialDer P, DiffMethod M, typename Callable>
+template <Derivative D, DiffMethod M, typename Callable>
 double Differentiator(const Callable& F, double x, double y);
 
 class AAD22 {
    public:
-    AAD22() = delete;
-    AAD22(double v) : m_val(v) {}
+    AAD22(): m_val(0) {};
+    explicit AAD22(double v) : m_val(v) {}
     AAD22(Variable var, double v) : m_val(v) {
         if (var == Variable::X) {
             m_d1[0] = 1;
@@ -31,25 +31,33 @@ class AAD22 {
 
     AAD22 operator+() const;
     AAD22 operator-() const;
+
+    AAD22& operator+=(const AAD22& rhs);
+    AAD22& operator-=(const AAD22& rhs);
+    AAD22& operator*=(const AAD22& rhs);
+    AAD22& operator/=(const AAD22& rhs);
+
     AAD22 operator+(const AAD22& rhs) const;
     AAD22 operator-(const AAD22& rhs) const;
     AAD22 operator*(const AAD22& rhs) const;
     AAD22 operator/(const AAD22& rhs) const;
-    AAD22 operator+=(const AAD22& rhs);
-    AAD22 operator-=(const AAD22& rhs);
-    AAD22 operator*=(const AAD22& rhs);
-    AAD22 operator/=(const AAD22& rhs);
+
+    AAD22& operator+=(const double rhs);
+    AAD22& operator-=(const double rhs);
+    AAD22& operator*=(const double rhs);
+    AAD22& operator/=(const double rhs);
+
     AAD22 operator+(const double rhs) const;
     AAD22 operator-(const double rhs) const;
     AAD22 operator*(const double rhs) const;
     AAD22 operator/(const double rhs) const;
-    AAD22 operator+=(const double rhs);
-    AAD22 operator-=(const double rhs);
-    AAD22 operator*=(const double rhs);
-    AAD22 operator/=(const double rhs);
+
     friend AAD22 sin(const AAD22& arg);
     friend AAD22 cos(const AAD22& arg);
     friend AAD22 exp(const AAD22& arg);
+
+    [[nodiscard]] double get_value() const;
+    [[nodiscard]] double get_derivative(Derivative derivative) const;
 
    private:
     double m_val;
