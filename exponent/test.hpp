@@ -7,14 +7,19 @@
 namespace ADAAI {
 template <typename T>
 // calculates max errors over given interval for a_exponent
-std::pair<T, T>
-makeTests(T a_l, T a_r, T a_step, std::function<T(T)> a_exponent) {
+std::pair<T, T> makeTests(
+    T a_l,
+    T a_r,
+    T a_step,
+    std::function<T(T, std::vector<T> *)> a_exponent,
+    std::vector<T> *coefs_fft = nullptr
+) {
     T currentX = a_l;
     T absError = 0.0;
     T relError = 0.0;
     while (currentX <= a_r) {
         T stdExp = std::exp(currentX);
-        T impExp = a_exponent(currentX);
+        T impExp = a_exponent(currentX, coefs_fft);
         T diff = std::abs(stdExp - impExp);
         if (currentX < 0) {
             absError = std::max(diff, absError);
@@ -36,7 +41,7 @@ void runTests(F a_l, F a_r, F a_step, const std::string &a_typename) {
               << 10.0 * ADAAI::Eps<float> << std::endl;
     {
         auto [absError, relError] =
-            makeTests<F>(a_l, a_r, a_step, Exp<Method::Pade, F, Capacity>);
+            makeTests<F>(a_l, a_r, a_step, Exp<Method::Taylor, F, Capacity>);
         std::cout << "=> TAYLOR     | Max absolute error: " << absError
                   << std::endl;
         std::cout << "=> TAYLOR     | Max relative error: " << relError
@@ -56,6 +61,18 @@ void runTests(F a_l, F a_r, F a_step, const std::string &a_typename) {
         std::cout << "=> CHEBYSHEV  | Max absolute error: " << absError
                   << std::endl;
         std::cout << "=> CHEBYSHEV  | Max relative error: " << relError
+                  << std::endl;
+    }
+    {
+        int N = 1023;
+        std::vector<F> coef_fft(N + 1, 0);
+        chebyshevGaussQuadrature(N, coef_fft);
+        auto [absError, relError] = makeTests<F>(
+            a_l, a_r, a_step, Exp<Method::Fourier, F, Capacity>, &coef_fft
+        );
+        std::cout << "=> Fourier    | Max absolute error: " << absError
+                  << std::endl;
+        std::cout << "=> Fourier    | Max relative error: " << relError
                   << std::endl;
     }
     std::cout << std::endl;

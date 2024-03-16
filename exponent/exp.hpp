@@ -2,6 +2,7 @@
 
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
+#include <gsl/gsl_fft_real.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_sf_trig.h>
 #include <cstdint>
@@ -12,7 +13,74 @@
 
 namespace ADAAI {
 
-enum class Method { Taylor, Pade, Chebyshev };
+enum class Method { Taylor, Pade, Chebyshev, Fourier };
+
+template <typename F>
+constexpr F getFourierCoef(const int k) {
+    if (k % 2 == 0) {
+        return (static_cast<F>(2) / PI<F>()) * (EPI<F>() - static_cast<F>(1)) /
+               static_cast<F>(k * k + 1);
+    } else {
+        return (static_cast<F>(2) / PI<F>()) * (-EPI<F>() - static_cast<F>(1)) /
+               static_cast<F>(k * k + 1);
+    }
+}
+
+template <typename F>
+constexpr F chebyshevPoly(F arg, int k) {
+    if (k == 0) {
+        return 1;
+    }
+    F fi = 1, se = arg;
+    for (int i = 2; i <= k; ++i) {
+        F t = static_cast<F>(2) * arg * se - fi;
+        fi = se;
+        se = t;
+    }
+    return se;
+}
+
+template <typename F>
+constexpr void chebyshevGaussQuadrature(const int N, std::vector<F> &res) {
+    std::vector<F> nodes(N + 2);
+    for (int i = 1; i <= N + 1; i++) {  // computing of nodes
+        nodes[i] = std::cos(
+            (static_cast<F>(2 * i - 1) * PI<F>()) /
+            (static_cast<F>(2 * (N + 1)))
+        );
+    }
+
+    for (int i = 0; i < N + 1; i++) {
+        for (int j = 1; j <= N + 1; j++) {
+            F acos = std::acos(nodes[j]);
+            res[i] += std::exp(acos) * chebyshevPoly(nodes[j], i);
+        }
+        res[i] = (res[i] * static_cast<F>(2)) / (static_cast<F>(N + 1));
+    }
+}
+
+template <typename F>
+F solveFFT(const int N, F x, std::vector<F> coefs) {
+    double packed[N + 1];  // N + 1 = 2^m
+    memset(packed, 0.0, sizeof(packed));
+    for (int i = 0; i < N + 1; ++i) {
+        packed[i] = static_cast<double>(coefs[i]);
+    }
+
+    packed[0] /= 2;
+
+    gsl_fft_real_radix2_transform(packed, 1, N + 1);
+
+    int i = 0;
+    F diff = x;
+    while (i < N) {  // x = pi * index / (N + 1) search for the result
+        F next = 2 * PI<F>() * static_cast<F>(i + 1) / static_cast<F>(N + 1);
+        if (std::abs(x - next) >= diff)
+            break;
+        i++, diff = std::abs(x - next);
+    }
+    return static_cast<F>(packed[(i)]);
+}
 
 template <typename F>
 void solveChebyshev(const int N, std::vector<F> &res) {
@@ -91,7 +159,7 @@ solvePade(Poly<F, Capacity> T, Poly<F, Capacity> E, size_t n) {
 
 // constexpr -- compile-time evaluation
 template <Method M = Method::Pade, typename F, size_t Capacity>
-constexpr F Exp(F a_x) {
+constexpr F Exp(F a_x, std::vector<F> *coefs_fft = nullptr) {
     // F must be floating-point number
     static_assert(std::is_floating_point_v<F>);
 
@@ -163,11 +231,30 @@ constexpr F Exp(F a_x) {
         std::vector<F> c(N + 2);
         solveChebyshev(N + 1, c);
         for (int i = 0; i <= N + 1; ++i) {
-            F acos = gsl_complex_arccos_real(arg).dat[0];
-            y1 += c[i] * gsl_sf_cos(i * acos);
+            y1 += c[i] * chebyshevPoly(arg, i);
         }
+    } else if constexpr (M == Method::Fourier) {
+        //        if (arg < 0) {
+        //            for (int k = 1; k <= N; k++) {
+        //                st.push_back(st.back() * arg / k);
+        //            }
+        //            // compute y1 = 2^y0 = exp(y0 * ln2) via Taylor formula
+        //            // we summarize the terms of the Taylor formula in
+        //            ascending order
+        //            // of the modulus of the terms to minimize the error of
+        //            calculations
+        //            // in floating point numbers arithmetic
+        //
+        //            for (int i = 0; i < st.size(); ++i)
+        //                y1 += st[st.size() - i - 1];
+        //        } else {
+        if (y0 < 0.0) {
+            n -= 1, y0 += 1;
+            arg = y0 * Ln2<F>();
+        }
+        y1 = solveFFT(coefs_fft->size() - 1, arg, *coefs_fft);
+        //        }
     }
-
     return std::ldexp(y1, n);  // return 2^n * y1
 }
 
