@@ -41,12 +41,12 @@ double AirSpeed::operator()(double height) {
     return std::sqrt(density.pressure(height) / density(height));
 }
 
+double DragCoef::operator()(double mach) {
+    assert(mach >= 0);
+    if (mach >= 2.5) {
+        return coefs.back();
+    }
 
-
-
-
-
-
-
-
-
+    int i = static_cast<int>(mach / step);
+    return coefs[i] + ((coefs[i + 1] - coefs[i]) / step) * (mach - i * step);
+}
