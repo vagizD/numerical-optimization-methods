@@ -1,8 +1,31 @@
-//
-// Created by PC on 16.03.2024.
-//
+#pragma once
 
-#ifndef STANDARD_ATMOSPHERE_MODEL_SAM_H
-#define STANDARD_ATMOSPHERE_MODEL_SAM_H
+#include <array>
 
-#endif //STANDARD_ATMOSPHERE_MODEL_SAM_H
+class Density;
+class AirSpeed;
+
+class Pressure {
+public:
+    Pressure(double p0, double t0);
+    double operator()(double height);
+private:
+    friend class Density;
+    std::array<double, 4> p;
+    std::array<double, 5> t;
+};
+
+class Density {
+    Density(Pressure p): pressure(p) {};
+    double operator()(double height);
+private:
+    friend class AirSpeed;
+    Pressure pressure;
+};
+
+class AirSpeed {
+    AirSpeed(Density d): density(d) {};
+    double operator()(double height);
+private:
+    Density density;
+};
