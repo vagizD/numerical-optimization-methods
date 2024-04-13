@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cmath>
 
 class Density;
 class AirSpeed;
@@ -90,3 +91,19 @@ void nextState(
     const std::array<double, 4> &u,
     std::array<double, 4> &result
 );
+
+class RHS_Velocity {
+private:
+    double m_p0;
+    double m_t0;
+    double m_mass;
+    double m_diameter;
+    double m_s;
+
+public:
+    constexpr static int N = 4;
+    RHS_Velocity(double a_p0, double a_t0, double a_mass, double a_diameter, double a_s)
+        : m_p0(a_p0), m_t0(a_t0), m_mass(a_mass), m_diameter(a_diameter), m_s(a_s){};
+    void
+    operator()(double a_t, std::array<double, 4> &a_v, std::array<double, 4> &result);
+};

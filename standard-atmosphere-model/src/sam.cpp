@@ -74,3 +74,16 @@ void nextState(
     result[2] = u[3];
     result[3] = -(qdf * u[3]) / (mass * velocity) - g;
 }
+
+void RHS_Velocity::operator()(
+    const double a_t,
+    std::array<double, 4> &a_v,
+    std::array<double, 4> &result
+) {
+    Pressure pressure(m_p0, m_t0);
+    Density density(pressure);
+    AirSpeed airSpeed(density);
+    DragCoef cd;
+    AerodynamicDragForce Q(cd, density);
+    nextState(Q, m_mass, airSpeed(a_v[2]), m_s, a_v, result);
+}
