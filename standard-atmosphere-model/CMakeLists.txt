@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(SOURCE_FILES
         src/sam.cpp
         src/tests.cpp
+        src/observer.cpp
 )
 
 include_directories(include)

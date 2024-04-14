@@ -40,7 +40,8 @@ public:
     bool operator()(
         double a_cur_t,
         int a_n,
-        const double *const a_cur_y
+        const double *a_cur_y,
+        bool verbose
     );  // observation + stop criteria
 
     void save_projectile(const std::string &filename) {
