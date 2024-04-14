@@ -21,3 +21,6 @@ public:
         // RKF45 method
     }
 };
+
+template <typename RHS>
+class TimeStepper_RKF45_GSL {};

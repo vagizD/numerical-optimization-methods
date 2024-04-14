@@ -15,7 +15,6 @@ public:
 
     void operator()(
         double a_t0,
-        double a_tEnd,
         std::array<double, Stepper::N> &a_y0,
         std::array<double, Stepper::N> &a_yEnd
     ) {

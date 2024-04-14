@@ -83,7 +83,7 @@ private:
     Density m_density;
 };
 
-class RHS_Velocity {
+class RHS_Projectile {
 private:
     double m_mass;
     double m_diameter;
@@ -96,7 +96,7 @@ private:
 
 public:
     constexpr static int N = 4;
-    RHS_Velocity(
+    RHS_Projectile(
         double a_pressure0,
         double a_temperature0,
         double a_mass,

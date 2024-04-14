@@ -17,7 +17,7 @@ int main() {
     };
     std::array<double, 4> u_diff = {};
 
-    RHS_Velocity rhs = RHS_Velocity(p0, t0, mass, diameter);
+    RHS_Projectile rhs = RHS_Projectile(p0, t0, mass, diameter);
     rhs(t0, u, u_diff);
 
     std::cout << "u : "

@@ -59,7 +59,7 @@ double AerodynamicDragForce::operator()(double mach, double y, double velocity, 
     return m_cd(mach) * m_density(y) * s * velocity * velocity / 2;
 }
 
-void RHS_Velocity::operator()(
+void RHS_Projectile::operator()(
     const double a_t,  // unused, autonomous ODE
     std::array<double, 4> &a_y,
     std::array<double, 4> &a_y_next
