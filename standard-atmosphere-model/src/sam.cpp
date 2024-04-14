@@ -1,10 +1,11 @@
 #include "sam.h"
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include "constants.h"
 
 int getLayer(double height) {
-    assert(0 <= height && height <= h.back());
+    //    assert(0 <= height && height <= h.back());
     if (height <= h[1]) {
         return 0;
     } else if (height <= h[2]) {
@@ -19,10 +20,14 @@ Pressure::Pressure(double p0, double t0) {  // initial pressure and absolute tem
     t[0] = t0, p[0] = p0;
     for (int i = 1; i < 4; ++i) {
         t[i] = t[i - 1] - r[i - 1] * (h[i] - h[i - 1]);
-        p[i] = p[i - 1] * std::exp(
-                              g / (R * r[i - 1]) *
-                              std::log(1 - r[i - 1] * (h[i] - h[i - 1]) / t[i - 1])
-                          );
+        if (r[i] != 0) {
+            p[i] = p[i - 1] * std::exp(
+                                  g / (R * r[i - 1]) *
+                                  std::log(1 - r[i - 1] * (h[i] - h[i - 1]) / t[i - 1])
+                              );
+        } else {
+            p[i] = p[i - 1] * std::exp(g * (h[i] - h[i - 1]) / (R * t[i - 1]));
+        }
     }
 }
 
@@ -59,7 +64,7 @@ double AerodynamicDragForce::operator()(double mach, double y, double velocity, 
     return m_cd(mach) * m_density(y) * s * velocity * velocity / 2;
 }
 
-void RHS_Projectile::operator()(
+void RHS_Projectile::differentiate(
     const double a_t,  // unused, autonomous ODE
     const std::array<double, 4> &a_y,
     std::array<double, 4> &a_y_next
@@ -70,7 +75,7 @@ void RHS_Projectile::operator()(
     double qdf = m_q(mach, a_y[2], velocity, s);
 
     a_y_next[0] = a_y[1];
-    a_y_next[1] = -(qdf * a_y[1]) / (m_mass * velocity);
+    a_y_next[1] = -(qdf * std::abs(a_y[1])) / (m_mass * velocity);
     a_y_next[2] = a_y[3];
-    a_y_next[3] = -(qdf * a_y[3]) / (m_mass * velocity) - g;
+    a_y_next[3] = -(qdf * std::abs(a_y[3])) / (m_mass * velocity) - g;
 }

@@ -6,24 +6,24 @@
 
 class Point {
 public:
-    Point(int a_x, int a_y, int a_t) : m_x(a_x), m_y(a_y), m_t(a_t){};
+    Point(double a_x, double a_y, double a_t) : m_x(a_x), m_y(a_y), m_t(a_t){};
 
-    double get_x() {
+    double get_x() const {
         return m_x;
     }
 
-    double get_y() {
+    double get_y() const {
         return m_y;
     }
 
-    double get_t() {
+    double get_t() const {
         return m_t;
     }
 
 private:
-    int m_x;
-    int m_y;
-    int m_t;
+    double m_x;
+    double m_y;
+    double m_t;
 };
 
 class SimpleObserver {
@@ -33,24 +33,15 @@ private:
     double m_y0;
     double m_t0 = -1;
     double m_tEnd = -1;
+    double m_y_max = -1;
+    bool m_save;
 
 public:
     SimpleObserver(double a_x0, double a_y0) : m_x0(a_x0), m_y0(a_y0){};
-    // a_n -- RHS::N, a_cur_y -- vector y
-    bool operator()(
+    bool make_decision(  // observation + stop criteria
         double a_cur_t,
-        int a_n,
-        const double *a_cur_y,
+        std::array<double, 4> a_cur_y,
         bool verbose
-    );  // observation + stop criteria
-
-    void save_projectile(const std::string &filename) {
-        std::ofstream fhandle;
-        fhandle.open(filename);
-        fhandle << "t, x, y\n";
-        for (auto &p : m_projectile) {
-            fhandle << p.get_t() << ", " << p.get_x() << ", " << p.get_y() << '\n';
-        }
-        fhandle.close();
-    }
+    );
+    void save_projectile(std::string &filename);
 };

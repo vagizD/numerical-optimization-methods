@@ -109,7 +109,7 @@ public:
           m_airSpeed(m_density),
           m_cd(),
           m_q(m_cd, m_density){};
-    void operator()(
+    void differentiate(
         double a_t,
         const std::array<double, N> &a_y,
         std::array<double, N> &a_y_next
