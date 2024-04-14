@@ -9,7 +9,7 @@ class AirSpeed;
 class Pressure {
 public:
     Pressure(double p0, double t0);
-    double operator()(double height);
+    double operator()(double height) const;
 
 private:
     friend class Density;
@@ -19,31 +19,31 @@ private:
 
 class Density {
 public:
-    Density(Pressure p) : pressure(p){};
-    double operator()(double height);
+    explicit Density(Pressure p) : m_pressure(p){};
+    double operator()(double height) const;
 
 private:
     friend class AirSpeed;
-    Pressure pressure;
+    Pressure m_pressure;
 };
 
 class AirSpeed {
 public:
-    AirSpeed(Density d) : density(d){};
-    double operator()(double height);
+    explicit AirSpeed(Density d) : m_density(d){};
+    double operator()(double height) const;
 
 private:
-    Density density;
+    Density m_density;
 };
 
 class DragCoef {
 public:
     DragCoef(){};
-    double operator()(double mach);
+    double operator()(double mach) const;
 
 private:
-    double step = 0.1;
-    std::array<double, 26> coefs = {
+    double m_step = 0.1;
+    std::array<double, 26> m_coefs = {
         0.00,  // 0.0
         0.10,  // 0.1
         0.10,  // 0.2
@@ -75,35 +75,43 @@ private:
 
 class AerodynamicDragForce {
 public:
-    AerodynamicDragForce(DragCoef dragCoef, Density d) : cd(dragCoef), density(d){};
-    double operator()(double mach, double y, double velocity, double s);
+    AerodynamicDragForce(DragCoef dragCoef, Density d) : m_cd(dragCoef), m_density(d){};
+    double operator()(double mach, double y, double velocity, double s) const;
 
 private:
-    DragCoef cd;
-    Density density;
+    DragCoef m_cd;
+    Density m_density;
 };
-
-void nextState(
-    AerodynamicDragForce q,
-    double mass,
-    double mach,
-    double s,
-    const std::array<double, 4> &u,
-    std::array<double, 4> &result
-);
 
 class RHS_Velocity {
 private:
-    double m_p0;
-    double m_t0;
     double m_mass;
     double m_diameter;
-    double m_s;
+
+    const Pressure m_pressure;
+    const Density m_density;
+    const AirSpeed m_airSpeed;
+    DragCoef m_cd;
+    AerodynamicDragForce m_q;
 
 public:
     constexpr static int N = 4;
-    RHS_Velocity(double a_p0, double a_t0, double a_mass, double a_diameter, double a_s)
-        : m_p0(a_p0), m_t0(a_t0), m_mass(a_mass), m_diameter(a_diameter), m_s(a_s){};
-    void
-    operator()(double a_t, std::array<double, 4> &a_v, std::array<double, 4> &result);
+    RHS_Velocity(
+        double a_pressure0,
+        double a_temperature0,
+        double a_mass,
+        double a_diameter
+    )
+        : m_mass(a_mass),
+          m_diameter(a_diameter),
+          m_pressure(a_pressure0, a_temperature0),
+          m_density(m_pressure),
+          m_airSpeed(m_density),
+          m_cd(),
+          m_q(m_cd, m_density){};
+    void operator()(
+        double a_t,
+        std::array<double, N> &a_y,
+        std::array<double, N> &a_y_next
+    ) const;
 };
