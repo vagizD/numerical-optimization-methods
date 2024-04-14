@@ -11,3 +11,5 @@ set(SOURCE_FILES
 
 include_directories(include)
 add_executable(sam ${SOURCE_FILES})
+find_package(GSL REQUIRED)
+target_link_libraries(sam GSL::gsl GSL::gslcblas)

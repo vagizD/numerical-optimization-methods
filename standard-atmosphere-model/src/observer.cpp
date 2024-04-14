@@ -1,5 +1,4 @@
 #include "observer.h"
-#include <array>
 #include <iostream>
 
 bool SimpleObserver::make_decision(  // observation + stop criteria
@@ -15,7 +14,7 @@ bool SimpleObserver::make_decision(  // observation + stop criteria
         m_t0 = a_cur_t;
     m_tEnd = a_cur_t;
     m_projectile.emplace_back(a_cur_y[0], a_cur_y[2], a_cur_t);
-
+    m_y_max = m_y_max < a_cur_y[2] ? a_cur_y[2] : m_y_max;
     if (verbose) {
         std::cout << "State: t = " << a_cur_t << ", x = " << a_cur_y[0]
                   << ", y = " << a_cur_y[2] << std::endl;

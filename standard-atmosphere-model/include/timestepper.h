@@ -9,7 +9,7 @@ template <typename RHS>
 class TimeStepper_RKF45 {
 private:
     RHS const *const m_rhs;
-    double eps = 1e-2;
+    double eps = 1e-4;
 
 public:
     explicit TimeStepper_RKF45(RHS const *a_rhs) : m_rhs(a_rhs){};

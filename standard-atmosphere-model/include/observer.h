@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -33,10 +34,10 @@ private:
     double m_y0;
     double m_t0 = -1;
     double m_tEnd = -1;
-    double m_y_max = -1;
     bool m_save;
 
 public:
+    double m_y_max = -1;
     SimpleObserver(double a_x0, double a_y0) : m_x0(a_x0), m_y0(a_y0){};
     bool make_decision(  // observation + stop criteria
         double a_cur_t,
