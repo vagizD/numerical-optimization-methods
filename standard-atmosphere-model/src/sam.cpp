@@ -61,7 +61,7 @@ double AerodynamicDragForce::operator()(double mach, double y, double velocity, 
 
 void RHS_Projectile::operator()(
     const double a_t,  // unused, autonomous ODE
-    std::array<double, 4> &a_y,
+    const std::array<double, 4> &a_y,
     std::array<double, 4> &a_y_next
 ) const {
     double s = M_PI * m_diameter * m_diameter / 4;

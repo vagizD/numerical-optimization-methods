@@ -111,7 +111,7 @@ public:
           m_q(m_cd, m_density){};
     void operator()(
         double a_t,
-        std::array<double, N> &a_y,
+        const std::array<double, N> &a_y,
         std::array<double, N> &a_y_next
     ) const;
 };
