@@ -70,9 +70,12 @@ struct Arg {
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Arg arg) {
-        for (auto &x : arg.data)
-            os << x << ' ';
-        os << std::endl;
+        std::cout << '(';
+        for (int i = 0; i < 3; ++i) {
+            os << arg.data[i];
+            if (i != 2) std::cout << ", ";
+        }
+        os << ')' << std::endl;
         return os;
     }
 };
