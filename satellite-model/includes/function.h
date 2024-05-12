@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cmath>
 #include <cstddef>
 #include <iostream>
 
@@ -66,14 +67,15 @@ struct Arg {
 
     [[nodiscard]] double SquaredNorm() const {
         auto prod = (*this) * (*this);
-        return prod[0] + prod[1] + prod[2];
+        return std::sqrt(prod[0] + prod[1] + prod[2]);
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Arg arg) {
         std::cout << '(';
         for (int i = 0; i < 3; ++i) {
             os << arg.data[i];
-            if (i != 2) std::cout << ", ";
+            if (i != 2)
+                std::cout << ", ";
         }
         os << ')' << std::endl;
         return os;
