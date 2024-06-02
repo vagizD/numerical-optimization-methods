@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <iostream>
+#include "analytical.h"
 #include "constants.h"
 #include "time_marshalling.h"
 
@@ -15,13 +17,25 @@ int main() {
     std::array<double, N + 1> c_res = {};
     go<N + 1>(c_init, c_res);
 
-    for (int i = 0; i <= N; i++) {
-        std::cout << "C(" << (double)i * S_max / (double)N << ", T) = " << c_res[i];
-        std::cout << std::endl;
-    }
+    size_t ind = std::min((size_t)(N * K * 0.9 / S_max), N);
+    size_t ind_next = std::min((size_t)(ind + 1), N);
+    double c_max = c_res[ind] + (c_res[ind_next] - c_res[ind]) * 0.5;
+
+    std::cout << "Analytic: C(S_max, T) = " << option_price(K * 0.9, 1) << '\n';
+    std::cout << "Numerical: C(S_max, T) = " << c_max << '\n';
+
+    //    for (int i = 0; i <= N; i++) {
+    //        std::cout << "C(" << (double)i * S_max / (double)N << ", T) = " << c_res[i];
+    //        std::cout << std::endl;
+    //    }
 
     return 0;
 }
+
+/*
+Analytic: C(S_max, T) = 10.9207
+Numerical: C(S_max, T) = 8.79225
+*/
 
 /*
 C(0, T) = 0

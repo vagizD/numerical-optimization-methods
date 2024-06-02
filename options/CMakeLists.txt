@@ -9,3 +9,5 @@ add_executable(options
         include/stepper.h
         include/time_marshalling.h
 )
+find_package(GSL REQUIRED)
+target_link_libraries(options GSL::gsl GSL::gslcblas)

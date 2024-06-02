@@ -38,9 +38,9 @@ void go(const std::array<double, N> &c_init, std::array<double, N> &c_res) {
     RHS<N> rhs = {};
     TimeStepper_RKF45<RHS<N>> stepper(&rhs);
     std::array<double, N> c_cur = c_init;
+    double a_h = STEP;
     while (tau + STEP <= 1.0) {
         double a_t = tau;
-        double a_h = STEP;
         c_cur[0] = 0;
         c_cur[N - 1] = (S_max - (double)K) * std::exp(-integrate_risk(tau));
         stepper.make_step(a_t, a_h, c_cur, c_res);

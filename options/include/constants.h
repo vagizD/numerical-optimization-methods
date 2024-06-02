@@ -7,7 +7,7 @@
 
 constexpr size_t N = 500;      // Number of discrete steps for S (price of share)
 constexpr int32_t K = 100;     // GazProm share price
-constexpr double STEP = 1e-3;  // Integration step
+constexpr double STEP = 5e-6;  // Integration step
 
 double risk(double tau) {
     assert(0 <= tau);
@@ -54,6 +54,23 @@ double integrate_risk(double tau) {
     }
     res += 0.25 * risk(0.6);
     return res + (tau - 0.75) * risk(1);
+}
+
+double integrate_volatility(double tau) {
+    double res = 0;
+    if (tau <= 0.25) {
+        return res + tau * volatility(0) * volatility(0);
+    }
+    res += 0.25 * volatility(0) * volatility(0);
+    if (tau <= 0.5) {
+        return res + (tau - 0.25) * volatility(0.30) * volatility(0.30);
+    }
+    res += 0.25 * volatility(0.30) * volatility(0.30);
+    if (tau <= 0.75) {
+        return res + (tau - 0.50) * volatility(0.60) * volatility(0.60);
+    }
+    res += 0.25 * volatility(0.60) * volatility(0.60);
+    return res + (tau - 0.75) * volatility(1) * volatility(1);
 }
 
 // S_max = K * exp(N * volatility_max * tau_max^(1/2))
