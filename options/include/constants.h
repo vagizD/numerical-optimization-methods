@@ -5,7 +5,8 @@
 #include <cinttypes>
 #include <complex>
 
-constexpr size_t N = 500;      // Number of discrete steps for S (price of share)
+constexpr size_t N = 1000;     // Number of discrete steps for S (price of share)
+constexpr size_t M = 13400;    // Number of discrete steps for tau (time)
 constexpr int32_t K = 100;     // GazProm share price
 constexpr double STEP = 5e-6;  // Integration step
 
@@ -79,12 +80,16 @@ const double S_max = K * std::exp(4 * 0.28);
 constexpr std::array<double, 1> k2_consts = {1. / 4.};
 constexpr std::array<double, 2> k3_consts = {3. / 32., 9. / 32.};
 constexpr std::array<double, 3> k4_consts = {
-    1932. / 2197., -7200. / 2197., 7296. / 2197.};
+    1932. / 2197., -7200. / 2197., 7296. / 2197.
+};
 constexpr std::array<double, 4> k5_consts = {
-    439. / 216., -8., 3680. / 513., -845. / 4104.};
+    439. / 216., -8., 3680. / 513., -845. / 4104.
+};
 constexpr std::array<double, 5> k6_consts = {
-    -8. / 27., 2., -3544. / 2565., 1859. / 4104., -11. / 40.};
+    -8. / 27., 2., -3544. / 2565., 1859. / 4104., -11. / 40.
+};
 constexpr std::array<double, 6> delta_consts = {-1. / 360.,     0.,        128. / 4275.,
                                                 2197. / 75240., -1. / 50., -2. / 55.};
 constexpr std::array<double, 6> gamma_consts = {
-    16. / 135, 0., 6656. / 12825., 28561. / 56430., -9. / 50., 2. / 55.};
+    16. / 135, 0., 6656. / 12825., 28561. / 56430., -9. / 50., 2. / 55.
+};

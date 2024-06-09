@@ -12,7 +12,7 @@ private:
     double eps = 1e-4;
 
 public:
-    explicit TimeStepper_RKF45(RHS const *a_rhs) : m_rhs(a_rhs){};
+    explicit TimeStepper_RKF45(RHS const *a_rhs) : m_rhs(a_rhs) {};
     constexpr static int N = RHS::N;
 
     void make_step(
