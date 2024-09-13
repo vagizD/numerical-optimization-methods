@@ -1,1 +1,2 @@
-# Labs and Homeworks for Numerical and Optimization methods @ HSE SPb 2024
+# Labs and Homeworks for Numerical and Optimization methods / GPU @ HSE SPb Falls 2024 & 2025
+
