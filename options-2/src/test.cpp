@@ -26,10 +26,10 @@ void test_utils() {
     auto [i, j, S_max, V_max] = adjust_grid_boundary(mp, n, m, T, M, S_0, V_0, K);
 
     std::cout << std::setprecision(5) << std::fixed;
-    std::cout << "i: " << i << '\n';
-    std::cout << "j: " << j << '\n';
-    std::cout << "S_max: " << S_max << '\n';
-    std::cout << "V_max:   " << V_max << '\n';
+    std::cout << "i          : " << i << '\n';
+    std::cout << "j          : " << j << '\n';
+    std::cout << "S_max      : " << S_max << '\n';
+    std::cout << "V_max      :   " << V_max << '\n';
     std::cout << "S_0 * n / i: " << S_0 * static_cast<double>(n) / static_cast<double>(i)
               << '\n';
     std::cout << "V_0 * m / j:   "
@@ -39,3 +39,14 @@ void test_utils() {
 int main() {
     test_utils();
 }
+
+/* output
+
+i          : 170
+j          : 177
+S_max      : 117.64706
+V_max      :   1.12994
+S_0 * n / i: 117.64706
+V_0 * m / j:   1.12994
+
+*/
