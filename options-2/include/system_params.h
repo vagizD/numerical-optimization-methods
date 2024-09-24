@@ -1,6 +1,5 @@
 #pragma once
 #include <cassert>
-#include <cmath>
 
 class ModelParams {
 public:

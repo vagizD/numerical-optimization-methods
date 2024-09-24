@@ -4,23 +4,23 @@
 #include "system_params.h"
 
 void test_utils() {
-    constexpr double r = 0.25;
-    constexpr double d = 0.20;
-    constexpr double sigma = 0.16;
-    constexpr double kappa = 0.10;
-    constexpr double beta = 1.0;
+    constexpr double r       = 0.25;
+    constexpr double d       = 0.20;
+    constexpr double sigma   = 0.16;
+    constexpr double kappa   = 0.10;
+    constexpr double beta    = 1.0;
     constexpr double epsilon = 0.13;
-    constexpr double rho = 0.50;
-    constexpr double theta = 0.30;
+    constexpr double rho     = 0.50;
+    constexpr double theta   = 0.30;
 
-    constexpr size_t n = 200;
-    constexpr size_t m = 200;
-    constexpr size_t p = 100;
-    constexpr double T = 1.0;
-    constexpr double M = 1.0;
-    constexpr double S_0 = 100.0;
-    constexpr double V_0 = 1.0;
-    constexpr double K = 90;
+    constexpr size_t n       = 200;
+    constexpr size_t m       = 200;
+    constexpr size_t p       = 100;
+    constexpr double T       = 1.0;
+    constexpr double M       = 1.0;
+    constexpr double S_0     = 100.0;
+    constexpr double V_0     = 1.0;
+    constexpr double K       = 90;
 
     auto sp = SystemParams(r, d, sigma, kappa, beta, epsilon, rho, theta, S_0, V_0, T, M, K, n, m, p);
 
