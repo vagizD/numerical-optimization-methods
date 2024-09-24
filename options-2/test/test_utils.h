@@ -44,7 +44,7 @@ inline void test_adjust_boundary() {
     assert(std::abs(S_max_est - sp.m_S_max) <= RTOL);
     assert(std::abs(V_max_est - sp.m_V_max) <= RTOL);
 
-    std::cout << "\nPASSED\n";
+    std::cout << "PASSED\n\n";
 }
 
 inline void test_utils() {

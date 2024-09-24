@@ -1,5 +1,7 @@
 #pragma once
 #include <cassert>
+#include <cstddef>
+#include <tuple>
 
 class ModelParams {
 public:
