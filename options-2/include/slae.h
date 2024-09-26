@@ -1,5 +1,4 @@
 #pragma once
-#include <algorithm>
 #include <array>
 
 // Given logical indexes (lrow, lcol), computes physical index (prow, pcol)
