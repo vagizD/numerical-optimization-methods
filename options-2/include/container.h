@@ -15,6 +15,8 @@ public:
     virtual void set(size_t i, size_t j, double x) = 0;
     virtual void add(size_t i, size_t j, double x) = 0;
     virtual void init_zero() = 0;
+    virtual double operator[](size_t offset) const = 0;   // get method
+    virtual double& operator[](size_t offset) = 0;        // set method
     virtual ~Container() = default;
 };
 
@@ -42,6 +44,18 @@ public:
     void add(const size_t i, const size_t j, const double x) override {
         A[i][j] += x;
     }
+
+    double operator[](const size_t offset) const override {
+        const size_t i = offset / N;
+        const size_t j = offset % N;
+        return A[i][j];
+    }
+
+    double& operator[](const size_t offset) override {
+        const size_t i = offset / N;
+        const size_t j = offset % N;
+        return &A[i][j];
+    }
 };
 
 
@@ -64,6 +78,14 @@ public:
 
     void add(const size_t i, const size_t j, const double x) override {
         A[map2to1(i, j, N)] += x;
+    }
+
+    double operator[](const size_t offset) const override {
+        return A[offset];
+    }
+
+    double& operator[](const size_t offset) override {
+        return &A[offset];
     }
 };
 
@@ -105,6 +127,16 @@ public:
     void add(const size_t i, const size_t j, const double x) override {
         check_boundary(i, j);
         A[map2to1(i, i - j + 2, 5)] += x;
+    }
+
+    double operator[](const size_t offset) const override {
+        assert(offset < M);
+        return A[offset];
+    }
+
+    double& operator[](const size_t offset) override {
+        assert(offset < M);
+        return &A[offset];
     }
 };
 
