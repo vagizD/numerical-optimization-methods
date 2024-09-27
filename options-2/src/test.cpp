@@ -1,9 +1,11 @@
-#include "test_slae.h"
 #include "test_utils.h"
+#include "test_container.h"
+#include "test_slae.h"
 
 int main() {
-    test_slae();
+    test_container();
     test_utils();
+    test_slae();
 }
 
 /* output

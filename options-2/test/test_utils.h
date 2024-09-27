@@ -50,5 +50,5 @@ inline void test_adjust_boundary() {
 inline void test_utils() {
     std::cout << "\n=================== START TEST UTILS ===================\n";
     test_adjust_boundary();
-    std::cout << "\n==================== END TEST SLAE ====================\n\n";
+    std::cout << "==================== END TEST SLAE ====================\n\n";
 }
