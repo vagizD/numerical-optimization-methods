@@ -155,14 +155,14 @@ void solve_slae_sparse_(
     }
 
     bool flag = true;
-    for (size_t lrow = N - 1; flag; --lrow) {
-        x[lrow] = b[lrow];
-        for (size_t lcol = lrow + 1; lcol < std::min(lcol + A.d + 1, N); ++lcol) {
-            x[lrow] -= x[lcol] * A[l2p<N>(lrow, lcol, pofl)];
+    for (size_t i = N - 1; flag; --i) {
+        x[pofl[i]] = b[i];
+        for (size_t j = i + 1; j < std::min(i + A.d + 1, N); ++j) {
+            x[pofl[i]] -= x[pofl[j]] * A[l2p<N>(i, j, pofl)];
         }
-        x[lrow] /= A[l2p<N>(lrow, lrow, pofl)];
+        x[pofl[i]] /= A[l2p<N>(i, i, pofl)];
 
-        flag = (lrow != 0);
+        flag = (i != 0);
     }
 }
 
@@ -179,6 +179,7 @@ void solve_slae(
     auto A_copy = A;
     solve_slae_(A_copy, b_copy, x);
 }
+
 
 template <const size_t N, typename C>
 void solve_slae_sparse(
