@@ -2,7 +2,7 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
-#include "test_constants.h"
+#include "constants.h"
 #include "utils.h"
 
 inline void test_adjust_boundary() {

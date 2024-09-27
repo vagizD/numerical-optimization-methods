@@ -128,7 +128,9 @@ void solve_slae_sparse_(
     }
 
     for (size_t li = 0; li < N; ++li) {
-        size_t lj = get_max_index_sparse(A, li, li, pofl);
+        // size_t lj = get_max_index_sparse(A, li, li, pofl);
+        assert(A[l2p<N>(li, li, pofl)] != 0);
+        size_t lj = li;
 
         if (std::abs(A[l2p<N>(li, lj, pofl)]) < 1e-10) {
             std::cerr << "Zero as max element\n";
@@ -158,10 +160,9 @@ void solve_slae_sparse_(
     for (size_t i = N - 1; flag; --i) {
         x[pofl[i]] = b[i];
         for (size_t j = i + 1; j < std::min(i + A.d + 1, N); ++j) {
-            x[pofl[i]] -= x[pofl[j]] * A[l2p<N>(i, j, pofl)];
+            x[pofl[i]] -= x[j] * A[i * N + j];
         }
-        x[pofl[i]] /= A[l2p<N>(i, i, pofl)];
-
+        x[pofl[i]] /= A[i * N + i];
         flag = (i != 0);
     }
 }
