@@ -1,6 +1,7 @@
 #pragma once
-#include <array>
 #include <container.h>
+#include <gsl/gsl_linalg.h>
+#include <array>
 #include <iostream>
 
 // Given logical indexes (lrow, lcol), computes physical index (prow, pcol)
@@ -31,70 +32,86 @@ size_t get_max_index(
 }
 
 // Solve SLAE Ax = b using Gaussian elimination
-template <const size_t N, typename C>
-void solve_slae_(
-    C &A,
-    std::array<double, N> &b,
-    std::array<double, N> &x
-) {
-    // 1. Initialize supplementary mapping array
-    std::array<size_t, N> pofl{};  // physical col number of logical col index
-    for (size_t i = 0; i < N; ++i) {
-        pofl[i] = i;
-    }
+template <typename C, const size_t N>
+void solve_slae_(C &A, std::array<double, N> &b, std::array<double, N> &x) {
+    if constexpr (std::is_same_v<C, MatrixGSL<N>>) {
+        int signum;
+        // const gsl_vector_view b_gsl = gsl_vector_view_array(&b[0], N);
+        gsl_vector *b_gsl = gsl_vector_alloc(N);
+        for (int i = 0; i < N; ++i) {
+            gsl_vector_set(b_gsl, i, b[i]);
+        }
+        gsl_vector *x_gsl = gsl_vector_alloc(N);
+        gsl_permutation *p = gsl_permutation_alloc(N);
 
-    // 2. Transform A to Upper Triangular Matrix
-    // Iterate by logical index of row/col
-    for (size_t li = 0; li < N; ++li) {
-        // Get logical index of maximum element in the row
-        size_t lj = get_max_index(A, li, li, pofl);
+        gsl_linalg_LU_decomp(A.get_matrix(), p, &signum);
+        gsl_linalg_LU_solve(A.get_matrix(), p, b_gsl, x_gsl);
 
-        if (std::abs(A[l2p<N>(li, lj, pofl)]) < 1e-10) {
-            std::cerr << "Zero as max element\n";
-            exit(1);
+        for (int i = 0; i < N; ++i) {
+            x[i] = gsl_vector_get(x_gsl, i);
+        }
+        gsl_permutation_free(p);
+        gsl_vector_free(x_gsl);
+        gsl_vector_free(b_gsl);
+    } else {
+        // 1. Initialize supplementary mapping array
+        std::array<size_t, N> pofl{};  // physical col number of logical col index
+        for (size_t i = 0; i < N; ++i) {
+            pofl[i] = i;
         }
 
-        // Swap logical indexes of leftmost and max columns
-        std::swap(pofl[li], pofl[lj]);
+        // 2. Transform A to Upper Triangular Matrix
+        // Iterate by logical index of row/col
+        for (size_t li = 0; li < N; ++li) {
+            // Get logical index of maximum element in the row
+            size_t lj = get_max_index(A, li, li, pofl);
 
-        // Subtract current row from each row below
-        size_t poffset = l2p<N>(li, li, pofl);  // A[i, i]
-        for (size_t lrow = li + 1; lrow < N; ++lrow) {
-            size_t row_poffset = l2p<N>(lrow, li, pofl);  //  A[i + r, i]
-            if (A[row_poffset] == 0) {
-                continue;
-            }
-            double m = A[row_poffset] / A[poffset];
-
-            A[row_poffset] = 0;
-
-            for (size_t lcol = li + 1; lcol < N; ++lcol) {
-                size_t row_col_poffset = l2p<N>(lrow, lcol, pofl);  // A[i + r, i + c]
-                size_t col_poffset = l2p<N>(li, lcol, pofl);        // A[i, i + c]
-                A[row_col_poffset] -= m * A[col_poffset];
+            if (std::abs(A[l2p<N>(li, lj, pofl)]) < 1e-10) {
+                std::cerr << "Zero as max element\n";
+                exit(1);
             }
 
-            b[lrow] -= m * b[li];
+            // Swap logical indexes of leftmost and max columns
+            std::swap(pofl[li], pofl[lj]);
+
+            // Subtract current row from each row below
+            size_t poffset = l2p<N>(li, li, pofl);  // A[i, i]
+            for (size_t lrow = li + 1; lrow < N; ++lrow) {
+                size_t row_poffset = l2p<N>(lrow, li, pofl);  //  A[i + r, i]
+                if (A[row_poffset] == 0) {
+                    continue;
+                }
+                double m = A[row_poffset] / A[poffset];
+
+                A[row_poffset] = 0;
+
+                for (size_t lcol = li + 1; lcol < N; ++lcol) {
+                    size_t row_col_poffset = l2p<N>(lrow, lcol, pofl);  // A[i + r, i + c]
+                    size_t col_poffset = l2p<N>(li, lcol, pofl);        // A[i, i + c]
+                    A[row_col_poffset] -= m * A[col_poffset];
+                }
+
+                b[lrow] -= m * b[li];
+            }
         }
-    }
 
-    // 3. Backtrack and compute values of x
+        // 3. Backtrack and compute values of x
 
-    // x_N = b_N / A[N, N];
-    // x_i = (b_i - \sum_{j=i+1}^{N}x_j * A[i, j]) / A[i, i];
-    // above is based on fact that x_j for j > i are already computed
-    bool flag = true;
-    for (size_t i = N - 1; flag; --i) {
-        x[pofl[i]] = b[i];
-        for (size_t j = i + 1; j < N; ++j) {
-            x[pofl[i]] -= x[pofl[j]] * A[l2p<N>(i, j, pofl)];
+        // x_N = b_N / A[N, N];
+        // x_i = (b_i - \sum_{j=i+1}^{N}x_j * A[i, j]) / A[i, i];
+        // above is based on fact that x_j for j > i are already computed
+        bool flag = true;
+        for (size_t i = N - 1; flag; --i) {
+            x[pofl[i]] = b[i];
+            for (size_t j = i + 1; j < N; ++j) {
+                x[pofl[i]] -= x[pofl[j]] * A[l2p<N>(i, j, pofl)];
+            }
+            x[pofl[i]] /= A[l2p<N>(i, i, pofl)];
+
+            flag = (i != 0);
         }
-        x[pofl[i]] /= A[l2p<N>(i, i, pofl)];
-
-        flag = (i != 0);
     }
 }
-
 
 // ================================ SPARSE MATRIX GE ================================
 template <const size_t N>
@@ -114,7 +131,6 @@ size_t get_max_index_sparse(
     }
     return ans;
 }
-
 
 template <const size_t N>
 void solve_slae_sparse_(
@@ -169,18 +185,12 @@ void solve_slae_sparse_(
 
 // ==================================================================================
 
-
 template <const size_t N, typename C>
-void solve_slae(
-    const C &A,
-    const std::array<double, N> &b,
-    std::array<double, N> &x
-) {
+void solve_slae(const C &A, const std::array<double, N> &b, std::array<double, N> &x) {
     std::array<double, N> b_copy = b;
     auto A_copy = A;
     solve_slae_(A_copy, b_copy, x);
 }
-
 
 template <const size_t N, typename C>
 void solve_slae_sparse(

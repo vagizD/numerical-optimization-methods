@@ -157,7 +157,6 @@ void fill_index_matrix(
 //     }
 // }
 
-
 // Function to:
 //   * init A and init b
 //   * init A and update b
@@ -221,7 +220,7 @@ void init_rlhs(
     // 0 ... 1 ... 0 0 = 0 -> x_i = 0
     // 0 ... 0 ... 1 1 = 0 -> x_m = x_{m-1}
     for (size_t j = 1; j < n; ++j) {
-        const size_t  mj = map2to1<n>(m, j);
+        const size_t mj = map2to1<n>(m, j);
         const size_t mmj = map2to1<n>(m - 1, j);
 
         a_A.add(mj, mj, 1);
@@ -244,34 +243,34 @@ void init_rlhs(
             double tmp = mu * Sj / (2 * a_sp.m_hs);
             tmp *= -tau;
             a_A.add(ij, im[1][2], -tmp);  // (2)
-            a_A.add(ij, im[1][0],  tmp);  // (2)
+            a_A.add(ij, im[1][0], tmp);   // (2)
 
             tmp = a_sp.m_mp.m_sigma * a_sp.m_mp.m_sigma / 2 *
                   std::pow(Sj, 2 * a_sp.m_mp.m_beta) / (a_sp.m_hs * a_sp.m_hs);
             tmp *= -tau;
-            a_A.add(ij, im[1][2],  tmp);         // (2)
-            a_A.add(ij, im[1][1],  -2 * tmp);  // (2)
-            a_A.add(ij, im[1][0],  tmp);         // (2)
+            a_A.add(ij, im[1][2], tmp);       // (2)
+            a_A.add(ij, im[1][1], -2 * tmp);  // (2)
+            a_A.add(ij, im[1][0], tmp);       // (2)
 
             tmp = a_sp.m_mp.m_kappa * (a_sp.m_mp.m_theta - Vi) / (2 * a_sp.m_hv);
             tmp *= -tau;
-            a_A.add(ij, im[2][1],  tmp);  // (2)
+            a_A.add(ij, im[2][1], tmp);   // (2)
             a_A.add(ij, im[0][1], -tmp);  // (2)
 
             tmp = a_sp.m_mp.m_epsilon * a_sp.m_mp.m_epsilon / 2 * Vi /
                   (a_sp.m_hv * a_sp.m_hv);
             tmp *= -tau;
-            a_A.add(ij, im[2][1],  tmp);  // (2)
+            a_A.add(ij, im[2][1], tmp);       // (2)
             a_A.add(ij, im[1][1], -2 * tmp);  // (2)
-            a_A.add(ij, im[0][1],  tmp);  // (2)
+            a_A.add(ij, im[0][1], tmp);       // (2)
 
             tmp = a_sp.m_mp.m_sigma * a_sp.m_mp.m_epsilon * a_sp.m_mp.m_rho *
                   std::pow(Sj, a_sp.m_mp.m_beta) * Vi / (4 * a_sp.m_hs * a_sp.m_hv);
             tmp *= -tau;
-            a_A.add(ij, im[2][2],  tmp);  // (2)
+            a_A.add(ij, im[2][2], tmp);   // (2)
             a_A.add(ij, im[2][0], -tmp);  // (2)
             a_A.add(ij, im[0][2], -tmp);  // (2)
-            a_A.add(ij, im[0][0],  tmp);  // (2)
+            a_A.add(ij, im[0][0], tmp);   // (2)
 
             tmp = a_sp.m_mp.m_r;
             tmp *= -tau;
@@ -286,10 +285,7 @@ void init_rlhs(
 
 // Function to init b for t=0
 template <const size_t m, const size_t n>
-void init_b(
-    std::array<double, (n + 1) * (m + 1)> &a_b,
-    const SystemParams &a_sp
-) {
+void init_b(std::array<double, (n + 1) * (m + 1)> &a_b, const SystemParams &a_sp) {
     for (size_t j = 0; j < n + 1; ++j) {
         const double Sj = S<n>(j, a_sp.m_S_max);
         for (size_t i = 0; i < m + 1; ++i) {
@@ -299,8 +295,7 @@ void init_b(
     }
 }
 
-
-template<const size_t m, const size_t n>
+template <const size_t m, const size_t n>
 void update_b(
     std::array<double, (n + 1) * (m + 1)> &a_b,
     std::array<double, (n + 1) * (m + 1)> &a_b_prev,
@@ -345,7 +340,7 @@ void update_b(
 
     // UPPER BOUNDARY ((m, n) in RIGHT, (m, 0) in LEFT)
     for (size_t j = 1; j < n; ++j) {
-        const size_t  mj = map2to1<n>(m, j);
+        const size_t mj = map2to1<n>(m, j);
         a_b[mj] = 0;
     }
 

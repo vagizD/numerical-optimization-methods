@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-
 #include "container.h"
 
 inline void test_container() {
@@ -32,7 +31,13 @@ inline void test_container() {
     MatrixSparse<N2, 5> BSparse = ASparse;
     assert(BSparse[10] == -1.5);
 
+    MatrixGSL<N1> AGSL;
+    AGSL.init_zero();
+    AGSL[5] = 1.5;
+
+    MatrixGSL<N1> BGSL = AGSL;
+    assert(BGSL[5] == 1.5);
+
     std::cout << "PASSED\n\n";
     std::cout << "=================== END TEST CONTAINER ===================\n";
 }
-

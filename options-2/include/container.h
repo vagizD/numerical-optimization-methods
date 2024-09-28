@@ -1,14 +1,10 @@
-#pragma  once
+#pragma once
+#include <gsl/gsl_linalg.h>
+#include <algorithm>
 #include <array>
 #include <cassert>
-#include <algorithm>
 
-enum class ContainerType {
-    Matrix2D,
-    Matrix1D,
-    MatrixGSL,
-    MatrixSparse
-};
+enum class ContainerType { Matrix2D, Matrix1D, MatrixGSL, MatrixSparse };
 
 // map 2D index to 1D
 inline size_t map2to1(const size_t i, const size_t j, const size_t n_cols) {
@@ -33,18 +29,18 @@ public:
     virtual void add(size_t i, size_t j, double x) = 0;
     virtual void init_zero() = 0;
     virtual double operator[](size_t offset) const = 0;  // get method (if const ref)
-    virtual double& operator[](size_t offset) = 0;       // set method
+    virtual double &operator[](size_t offset) = 0;       // set method
     virtual ~Container() = default;
 };
 
 // 2D matrix representation as array of arrays
 // NOT a contiguous block of memory
-template<const size_t N>
+template <const size_t N>
 class Matrix2D final : Container {
     std::array<std::array<double, N>, N> A;
 
 public:
-    [[nodiscard]] ContainerType type() const override {
+    [[nodiscard]] constexpr ContainerType type() const override {
         return ContainerType::Matrix2D;
     }
 
@@ -75,24 +71,23 @@ public:
         return A[i][j];
     }
 
-    double& operator[](const size_t offset) override {
+    double &operator[](const size_t offset) override {
         auto [i, j] = map1to2(offset, size());
         return A[i][j];
     }
 };
 
-
-template<const size_t N>
+template <const size_t N>
 class Matrix1D final : Container {
     std::array<double, N * N> A;
 
 public:
-    [[nodiscard]] const size_t size() const override {
-        return N;
+    [[nodiscard]] constexpr ContainerType type() const override {
+        return ContainerType::Matrix1D;
     }
 
-    [[nodiscard]] ContainerType type() const override {
-        return ContainerType::Matrix1D;
+    [[nodiscard]] const size_t size() const override {
+        return N;
     }
 
     void init_zero() override {
@@ -115,17 +110,64 @@ public:
         return A[offset];
     }
 
-    double& operator[](const size_t offset) override {
+    double &operator[](const size_t offset) override {
         return A[offset];
     }
 };
 
+template <const size_t N>
+class MatrixGSL final : Container {
+    gsl_matrix *A;
 
-template<const size_t N>
-class MatrixGSL final : Container {};
+public:
+    MatrixGSL() {
+        A = gsl_matrix_alloc(N, N);
+    }
 
+    // ~MatrixGSL() override {
+    //     gsl_matrix_free(A);
+    // }
 
-template<const size_t N, const size_t n_cols>
+    [[nodiscard]] constexpr ContainerType type() const override {
+        return ContainerType::MatrixGSL;
+    }
+
+    [[nodiscard]] const size_t size() const override {
+        return N;
+    }
+
+    [[nodiscard]] gsl_matrix *get_matrix() const {
+        return A;
+    }
+
+    void init_zero() override {
+        gsl_matrix_set_zero(A);
+    }
+
+    double get(const size_t i, const size_t j) override {
+        return gsl_matrix_get(A, i, j);
+    }
+
+    void set(const size_t i, const size_t j, const double x) override {
+        gsl_matrix_set(A, i, j, x);
+    }
+
+    void add(const size_t i, const size_t j, const double x) override {
+        set(i, j, get(i, j) + x);
+    }
+
+    double operator[](const size_t offset) const override {
+        auto [i, j] = map1to2(offset, size());
+        return *gsl_matrix_ptr(A, i, j);
+    }
+
+    double &operator[](const size_t offset) override {
+        auto [i, j] = map1to2(offset, size());
+        return *gsl_matrix_ptr(A, i, j);
+    }
+};
+
+template <const size_t N, const size_t n_cols>
 class MatrixSparse final : Container {
     std::array<double, N * n_cols> A;
 
@@ -142,12 +184,12 @@ public:
         }
     }
 
-    [[nodiscard]] const size_t size() const override {
-        return N;
+    [[nodiscard]] constexpr ContainerType type() const override {
+        return ContainerType::MatrixSparse;
     }
 
-    [[nodiscard]] ContainerType type() const override {
-        return ContainerType::MatrixSparse;
+    [[nodiscard]] const size_t size() const override {
+        return N;
     }
 
     void init_zero() override {
@@ -174,12 +216,11 @@ public:
         return A[map2to1(i, j + d - i, n_cols)];
     }
 
-    double& operator[](const size_t offset) override {
+    double &operator[](const size_t offset) override {
         auto [i, j] = map1to2(offset, size());
         return A[map2to1(i, j + d - i, n_cols)];
     }
 };
-
 
 // 11 12 13  0 ...
 // 21 22 23 24  0 ...
@@ -189,8 +230,6 @@ public:
 //  0  0  0 64 65 66 67 68  0 ...
 //  0  0  0  0 75 76 77 78 79  0 ...
 //  0  0  0  0  0 86 87 88 89 90  0 ...
-
-
 
 // 11  0 13  0  0 12  0 ...
 // 21  0 23 24  0 22  0 ...

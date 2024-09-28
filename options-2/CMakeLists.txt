@@ -8,3 +8,9 @@ add_executable(
         options_2_test
         src/test.cpp src/system_params.cpp
 )
+
+add_compile_options(-fsanitize=address)
+add_link_options(-fsanitize=address)
+
+find_package(GSL REQUIRED)
+target_link_libraries(options_2_test GSL::gsl GSL::gslcblas)
