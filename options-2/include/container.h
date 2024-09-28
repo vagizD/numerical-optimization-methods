@@ -36,7 +36,7 @@ public:
 // 2D matrix representation as array of arrays
 // NOT a contiguous block of memory
 template <const size_t N>
-class Matrix2D final : Container {
+class Matrix2D final : public Container {
     std::array<std::array<double, N>, N> A;
 
 public:
@@ -78,7 +78,7 @@ public:
 };
 
 template <const size_t N>
-class Matrix1D final : Container {
+class Matrix1D final : public Container {
     std::array<double, N * N> A;
 
 public:
@@ -116,7 +116,7 @@ public:
 };
 
 template <const size_t N>
-class MatrixGSL final : Container {
+class MatrixGSL final : public Container {
     gsl_matrix *A;
 
 public:
@@ -168,7 +168,7 @@ public:
 };
 
 template <const size_t N, const size_t n_cols>
-class MatrixSparse final : Container {
+class MatrixSparse final : public Container {
     std::array<double, N * n_cols> A;
 
 public:

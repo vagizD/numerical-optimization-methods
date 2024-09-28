@@ -33,7 +33,7 @@ void fill_index_matrix(
 ) {
     for (int dx = -1; dx <= 1; ++dx) {
         for (int dy = -1; dy <= 1; ++dy) {
-            a_im[i + dx][j + dy] = map2to1<n>(i + dx, j + dy);
+            a_im[1 + dx][1 + dy] = map2to1<n>(i + dx, j + dy);
         }
     }
 }
