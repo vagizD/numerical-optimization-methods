@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <tuple>
@@ -32,7 +33,7 @@ public:
           m_epsilon(a_epsilon),
           m_rho(a_rho),
           m_theta(a_theta) {
-        assert((0 <= a_rho) && (a_rho < 1));
+        assert(std::abs(a_rho) < 1);
         assert(a_kappa > 0);
         assert(a_theta > 0);
         assert(a_epsilon > 0);
