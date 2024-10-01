@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "container.h"
 #include "slae.h"
+#include "blas.h"
 
 template <const size_t N, typename C>
 void run_test(
@@ -27,6 +28,31 @@ void run_test(
     }
     std::cout << "PASSED\n\n";
 }
+
+template <const size_t N, typename C>
+double run_test_norm(
+    const C &A,
+    const std::array<double, N> &b,
+    const size_t test_id,
+    const std::string &msg
+) {
+    std::array<double, N> x{};
+    std::array<double, N> Ax;
+    std::array<double, N> diff{};
+
+    std::cout << "TEST " << test_id << ": " << msg << '\n';
+
+    solve_slae<N, C>(A, b, x);
+    sqmatrix_on_vector<double, C, N>(A, x, Ax);
+    vectors_diff(Ax, b, diff);
+    double res_norm = vector_norm(diff);
+
+    assert(res_norm <= RTOL);
+    std::cout << "N = " << N <<  ", ||Ax - b|| = " << res_norm << '\n';
+    std::cout << "PASSED\n\n";
+    return res_norm;
+}
+
 
 inline void test_slae() {
     std::cout << "\n=================== START TEST SLAE ===================\n";
@@ -161,5 +187,23 @@ inline void test_slae() {
                                              136092. / 68543.,  30958. / 68543.};
 
     run_test<N5, MatrixGSL<N5>>(A5, b5, ans5, 5, "MatrixGSL GE");
+
+
+    constexpr size_t N6 = 500;
+    Matrix1D<N6> A6;
+    std::array<double, N6> b6{};
+    A6.init_normal();
+    generate_normal(b6, 0.0, 1.0);
+
+    run_test_norm(A6, b6, 6, "Matrix1D GE (Norm)");
+
+    constexpr size_t N7 = 10;
+    MatrixGSL<N7> A7;
+    std::array<double, N7> b7{};
+    A7.init_normal();
+    generate_normal(b7, 0.0, 1.0);
+
+    run_test_norm(A7, b7, 7, "MatrixGSL GE (Norm)");
+
     std::cout << "==================== END TEST SLAE ====================\n\n";
 }

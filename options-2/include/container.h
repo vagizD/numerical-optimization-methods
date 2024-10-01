@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include "rng.h"
 
 enum class ContainerType { Matrix2D, Matrix1D, MatrixGSL, MatrixSparse };
 
@@ -24,10 +25,11 @@ public:
     [[nodiscard]] virtual ContainerType type() const = 0;
     [[nodiscard]] virtual const size_t size() const = 0;
 
-    virtual double get(size_t i, size_t j) = 0;
+    [[nodiscard]] virtual double get(size_t i, size_t j) const = 0;
     virtual void set(size_t i, size_t j, double x) = 0;
     virtual void add(size_t i, size_t j, double x) = 0;
     virtual void init_zero() = 0;
+    virtual void init_normal() = 0;
     virtual double operator[](size_t offset) const = 0;  // get method (if const ref)
     virtual double &operator[](size_t offset) = 0;       // set method
     virtual ~Container() = default;
@@ -54,7 +56,13 @@ public:
         }
     }
 
-    double get(const size_t i, const size_t j) override {
+    void init_normal() override {
+        for (size_t i = 0; i < N; ++i) {
+            generate_normal<double, N>(A[i], 0.0, 1.0);
+        }
+    }
+
+    [[nodiscard]] double get(const size_t i, const size_t j) const override {
         return A[i][j];
     }
 
@@ -94,7 +102,11 @@ public:
         std::fill(A.begin(), A.end(), 0);
     }
 
-    double get(const size_t i, const size_t j) override {
+    void init_normal() override {
+        generate_normal<double, N * N>(A, 0.0, 1.0);
+    }
+
+    [[nodiscard]] double get(const size_t i, const size_t j) const override {
         return A[map2to1(i, j, N)];
     }
 
@@ -144,7 +156,18 @@ public:
         gsl_matrix_set_zero(A);
     }
 
-    double get(const size_t i, const size_t j) override {
+    void init_normal() override {
+        std::array<double, N * N> tmp;
+        generate_normal<double, N * N>(tmp, 0.0, 1.0);
+
+        for (size_t i = 0; i < N; ++i) {
+            for (size_t j = 0; j < N; ++j) {
+                gsl_matrix_set(A, i, j, tmp[i * N + j]);
+            }
+        }
+    }
+
+    [[nodiscard]] double get(const size_t i, const size_t j) const override {
         return gsl_matrix_get(A, i, j);
     }
 
@@ -196,7 +219,11 @@ public:
         std::fill(A.begin(), A.end(), 0);
     }
 
-    double get(const size_t i, const size_t j) override {
+    void init_normal() override {
+        generate_normal<double, N * n_cols>(A, 0.0, 1.0);
+    }
+
+    [[nodiscard]] double get(const size_t i, const size_t j) const override {
         check_boundary(i, j);
         return A[map2to1(i, j + d - i, n_cols)];
     }
