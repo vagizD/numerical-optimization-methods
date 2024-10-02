@@ -32,13 +32,12 @@ size_t get_max_index(
 }
 
 // Solve SLAE Ax = b using Gaussian elimination
-template <typename C, const size_t N>
-void solve_slae_(C &A, std::array<double, N> &b, std::array<double, N> &x) {
+template <typename F, typename C, const size_t N>
+void solve_slae_(C &A, std::array<F, N> &b, std::array<F, N> &x) {
     if constexpr (std::is_same_v<C, MatrixGSL<N>>) {
         int signum;
-        // const gsl_vector_view b_gsl = gsl_vector_view_array(&b[0], N);
         gsl_vector *b_gsl = gsl_vector_alloc(N);
-        for (int i = 0; i < N; ++i) {
+        for (size_t i = 0; i < N; ++i) {
             gsl_vector_set(b_gsl, i, b[i]);
         }
         gsl_vector *x_gsl = gsl_vector_alloc(N);
@@ -47,7 +46,7 @@ void solve_slae_(C &A, std::array<double, N> &b, std::array<double, N> &x) {
         gsl_linalg_LU_decomp(A.get_matrix(), p, &signum);
         gsl_linalg_LU_solve(A.get_matrix(), p, b_gsl, x_gsl);
 
-        for (int i = 0; i < N; ++i) {
+        for (size_t i = 0; i < N; ++i) {
             x[i] = gsl_vector_get(x_gsl, i);
         }
         gsl_permutation_free(p);
@@ -81,7 +80,7 @@ void solve_slae_(C &A, std::array<double, N> &b, std::array<double, N> &x) {
                 if (A[row_poffset] == 0) {
                     continue;
                 }
-                double m = A[row_poffset] / A[poffset];
+                F m = A[row_poffset] / A[poffset];
 
                 A[row_poffset] = 0;
 
@@ -113,9 +112,9 @@ void solve_slae_(C &A, std::array<double, N> &b, std::array<double, N> &x) {
     }
 }
 
-template <const size_t N, typename C>
-void solve_slae(const C &A, const std::array<double, N> &b, std::array<double, N> &x) {
-    std::array<double, N> b_copy = b;
+template <typename F, const size_t N, typename C>
+void solve_slae(const C &A, const std::array<F, N> &b, std::array<F, N> &x) {
+    std::array<F, N> b_copy = b;
     auto A_copy = A;
     solve_slae_(A_copy, b_copy, x);
 }
