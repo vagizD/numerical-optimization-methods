@@ -1,8 +1,7 @@
 #pragma once
-#include <array>
 #include <algorithm>
+#include <array>
 #include <cassert>
-
 
 template <typename F, const size_t N>
 F vector_norm(std::array<F, N> &v) {
@@ -15,9 +14,8 @@ F vector_norm(std::array<F, N> &v) {
     return max_element;
 }
 
-
 template <typename F, typename C, const size_t N>
-void sqmatrix_on_vector(const C& A, const std::array<F, N> &v, std::array<F, N> &res) {
+void sqmatrix_on_vector(const C &A, const std::array<F, N> &v, std::array<F, N> &res) {
     for (size_t i = 0; i < N; ++i) {
         res[i] = 0;
         for (size_t j = 0; j < N; ++j) {
@@ -25,7 +23,6 @@ void sqmatrix_on_vector(const C& A, const std::array<F, N> &v, std::array<F, N> 
         }
     }
 }
-
 
 template <typename F, const size_t N>
 void vectors_diff(

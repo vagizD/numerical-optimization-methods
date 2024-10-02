@@ -1,8 +1,9 @@
 #pragma once
 #include <array>
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <vector>
+#include "analytical.h"
 #include "container.h"
 #include "stepper.h"
 
@@ -23,7 +24,7 @@ inline void test_stepper() {
     constexpr size_t m = 20;
     constexpr size_t p = 365;
     constexpr double T = 1.0;
-    constexpr double M = 1.0;
+    constexpr double M = 4.0;
     constexpr double S_0 = 100.0;
     constexpr double V_0 = 1.0;
     constexpr double K = 105;
@@ -37,9 +38,7 @@ inline void test_stepper() {
     {
         Matrix2D<(n + 1) * (m + 1)> A;
         std::array<double, (n + 1) * (m + 1)> res = {};
-        option_price_stepper<Matrix2D<(n + 1) * (m + 1)>, m, n>(
-            sp, A, res
-        );
+        option_price_stepper<Matrix2D<(n + 1) * (m + 1)>, m, n>(sp, A, res);
 
         results.push_back(res);
     }
@@ -47,37 +46,47 @@ inline void test_stepper() {
     {
         Matrix1D<(n + 1) * (m + 1)> A;
         std::array<double, (n + 1) * (m + 1)> res = {};
-        option_price_stepper<Matrix1D<(n + 1) * (m + 1)>,  m, n>(
-            sp, A, res
-        );
+        option_price_stepper<Matrix1D<(n + 1) * (m + 1)>, m, n>(sp, A, res);
 
         results.push_back(res);
     }
-
 
     {
         MatrixGSL<(n + 1) * (m + 1)> A;
         std::array<double, (n + 1) * (m + 1)> res = {};
-        option_price_stepper<
-            MatrixGSL<(n + 1) * (m + 1)>, m, n>(sp, A, res);
+        option_price_stepper<MatrixGSL<(n + 1) * (m + 1)>, m, n>(sp, A, res);
 
         results.push_back(res);
     }
 
-    std::cout << "    (V_i, S_j)    == Matrix2D == Matrix1D == MatrixGSL \n";
+    std::cout << std::setprecision(5);
+    std::cout
+        << "           (V_i, S_j)           | Matrix2D  | Matrix1D  | MatrixGSL |\n";
 
-    for (int i = 0; i < m + 1; i++) {
-        for (int j = 0; j < n + 1; j++) {
-            std::cout << "(" << sp.m_V_max * i / m << ", " << sp.m_S_max * j / n
-                      << ")   ";
-            for (int l = 0; l < results.size(); l++) {
-                std::cout << results[l][i * (n + 1) + j] << "  | ";
-            }
-            std::cout << "\n";
-        }
+    //    for (int i = 0; i < m + 1; i++) {
+    //        for (int j = 0; j < n + 1; j++) {
+    //            std::cout << "(" << sp.m_V_max * i / m << ", " << sp.m_S_max * j / n
+    //                      << ")   ";
+    //            for (int l = 0; l < results.size(); l++) {
+    //                std::cout << results[l][i * (n + 1) + j] << "  | ";
+    //            }
+    //            std::cout << "\n";
+    //        }
+    //    }
+    std::cout << "Answer for (S_0, V_0)     at t=T: ";
+    for (int l = 0; l < results.size(); ++l) {
+        std::cout << results[l][sp.m_V_0_i * (n + 1) + sp.m_S_0_j] << "  | ";
     }
+    std::cout << "\n";
+    std::cout << "Answer for (S_max, V_max) at t=T: ";
+    for (int l = 0; l < results.size(); ++l) {
+        std::cout << results[l][(n + 1) * (m + 1) - 1] << "  | ";
+    }
+    std::cout << "\n";
+    std::cout << "Analytical solution (1D BSM): " << option_price(sp) << '\n';
     auto t2 = std::chrono::high_resolution_clock::now();
     auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
     std::cout << static_cast<double>(ms_int.count()) / 1e3 << " seconds\n";
+
     std::cout << "=================== END TEST STEPPER ===================\n";
 }

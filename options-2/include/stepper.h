@@ -14,9 +14,16 @@ void option_price_stepper(
 
     init_b<m, n>(x, a_sp);
     init_rlhs<m, n>(A, b, x, a_sp, k);
-    while (k >= 1) {
+    std::fill(x.begin(), x.end(), 0);
+
+    while (true) {
         solve_slae(A, b, x);
         update_b<m, n>(b, x, a_sp, k);
+
+        if (k == 0) {
+            break;
+        }
+        std::fill(x.begin(), x.end(), 0);
         k--;
     }
 }

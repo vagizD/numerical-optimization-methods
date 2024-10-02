@@ -16,7 +16,7 @@ std::tuple<size_t, size_t, double, double> SystemParams::adjust_grid_boundary(
     const double S_max =
         std::max(a_S_0, a_K) * std::exp(a_M * a_mp.m_sigma * std::sqrt(a_T));
     const double V_max =
-        std::max(a_V_0, a_mp.m_theta) * (1 + a_M * a_mp.m_epsilon * std::sqrt(a_T));
+        std::max(a_V_0, a_mp.m_theta) * std::exp(a_M * a_mp.m_epsilon * std::sqrt(a_T));
 
     const double j_double = a_S_0 * static_cast<int>(a_n) / S_max;
     const double i_double = a_V_0 * static_cast<int>(a_m) / V_max;
