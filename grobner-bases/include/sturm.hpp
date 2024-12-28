@@ -13,12 +13,12 @@ public:
     explicit HalfInterval(F a, F b): a(a), b(b) {}
 };
 
-template<typename F, size_t N, size_t M>
+template<typename F, size_t N>
 class SturmF {
 public:
-    std::vector<MultivariatePoly<F, N, M>> polynomials;
+    std::vector<UnivariatePoly<F, N>> polynomials;
 
-    explicit SturmF(const std::vector<MultivariatePoly<F, N, M>>& polynomials):
+    explicit SturmF(const std::vector<UnivariatePoly<F, N>>& polynomials):
     polynomials(polynomials) {}
 };
 
